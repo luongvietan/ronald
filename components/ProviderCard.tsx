@@ -31,7 +31,7 @@ export default function ProviderCard({
       : fallbackImage ?? null;
 
   return (
-    <article className="bg-surface-container-lowest rounded overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 group flex flex-col">
+    <article className="bg-surface-container-lowest rounded overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group flex flex-col">
       {/* Image */}
       <div className="relative aspect-video overflow-hidden flex-shrink-0">
         {imageSrc ? (
@@ -99,9 +99,12 @@ export default function ProviderCard({
         )}
         <Link
           href={`/providers/${slug}`}
-          className="block w-full py-2.5 rounded-full bg-surface-container-high font-bold text-on-surface text-center text-sm hover:bg-primary hover:text-on-primary transition-colors mt-auto"
+          className="mt-auto flex items-center justify-center gap-1.5 w-full py-2.5 rounded-full bg-surface-container-high font-bold text-on-surface text-center text-sm hover:bg-primary hover:text-on-primary transition-all duration-200 group/btn"
         >
           View profile
+          <span className="material-symbols-outlined text-base translate-x-0 group-hover/btn:translate-x-0.5 transition-transform duration-200" style={{ fontSize: "16px" }}>
+            arrow_forward
+          </span>
         </Link>
       </div>
     </article>

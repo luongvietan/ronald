@@ -98,40 +98,61 @@ export default async function ProviderPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       {/* Image Gallery */}
-      <section className="w-full bg-surface-container-low">
+      <section className="w-full bg-surface-container-lowest">
         {images.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 h-[400px] gap-1">
-            {/* First image large */}
-            <div className="col-span-2 row-span-2 relative overflow-hidden">
-              {images[0]?.asset?._ref && (
-                <Image
-                  src={urlFor(images[0]).width(800).height(800).url()}
-                  alt={provider.name}
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              )}
+          <>
+            {/* Mobile: horizontal scroll strip */}
+            <div className="md:hidden flex gap-2 overflow-x-auto px-4 py-3 snap-x snap-mandatory scrollbar-none">
+              {images.slice(0, 6).map((img, i) => (
+                <div
+                  key={i}
+                  className="relative flex-none w-72 aspect-video rounded overflow-hidden snap-start"
+                >
+                  {img?.asset?._ref && (
+                    <Image
+                      src={urlFor(img).width(576).height(324).url()}
+                      alt={`${provider!.name} — photo ${i + 1}`}
+                      fill
+                      className="object-cover"
+                      priority={i === 0}
+                    />
+                  )}
+                </div>
+              ))}
             </div>
-            {/* Remaining images */}
-            {images.slice(1, 5).map((img, i) => (
-              <div key={i} className="relative overflow-hidden">
-                {img?.asset?._ref && (
+            {/* Desktop: mosaic grid */}
+            <div className="hidden md:grid grid-cols-4 h-[480px] gap-1">
+              <div className="col-span-2 row-span-2 relative overflow-hidden">
+                {images[0]?.asset?._ref && (
                   <Image
-                    src={urlFor(img).width(400).height(400).url()}
-                    alt={`${provider!.name} — photo ${i + 2}`}
+                    src={urlFor(images[0]).width(900).height(900).url()}
+                    alt={provider.name}
                     fill
-                    className="object-cover"
+                    className="object-cover hover:scale-105 transition-transform duration-700"
+                    priority
                   />
                 )}
               </div>
-            ))}
-          </div>
+              {images.slice(1, 5).map((img, i) => (
+                <div key={i} className="relative overflow-hidden">
+                  {img?.asset?._ref && (
+                    <Image
+                      src={urlFor(img).width(450).height(450).url()}
+                      alt={`${provider!.name} — photo ${i + 2}`}
+                      fill
+                      className="object-cover hover:scale-105 transition-transform duration-700"
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          </>
         ) : (
-          <div className="h-[300px] flex items-center justify-center bg-surface-container">
+          <div className="h-[280px] md:h-[380px] flex flex-col items-center justify-center bg-surface-container gap-3">
             <span className="material-symbols-outlined text-6xl text-outline">
               image
             </span>
+            <p className="text-on-surface-variant text-sm">No photos yet</p>
           </div>
         )}
       </section>
@@ -239,38 +260,43 @@ export default async function ProviderPage({
 
           {/* Sidebar — Contact */}
           <aside className="lg:col-span-1">
-            <div className="bg-surface-container-lowest rounded p-8 shadow-sm sticky top-24">
-              <h2 className="text-xl font-bold text-on-surface mb-6">
+            <div className="bg-surface-container-lowest rounded-[1.5rem] p-7 shadow-md sticky top-24 border border-outline-variant/40">
+              <p className="text-xs font-bold text-primary uppercase tracking-widest mb-1">
+                Get in touch
+              </p>
+              <h2 className="text-xl font-extrabold text-on-surface mb-5 font-headline">
                 Contact {provider.name}
               </h2>
 
-              {/* WhatsApp CTA */}
-              {provider.whatsapp && (
-                <a
-                  href={`https://wa.me/${provider.whatsapp}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-3 w-full py-4 rounded-full bg-[#25D366] text-white font-bold mb-4 hover:scale-105 transition-all shadow-md"
-                >
-                  <span className="material-symbols-outlined">chat</span>
-                  WhatsApp
-                </a>
-              )}
+              <div className="flex flex-col gap-3 mb-6">
+                {/* WhatsApp CTA */}
+                {provider.whatsapp && (
+                  <a
+                    href={`https://wa.me/${provider.whatsapp}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2.5 w-full py-3.5 rounded-full bg-[#25D366] text-white font-bold text-sm hover:brightness-110 hover:scale-[1.02] transition-all shadow-md"
+                  >
+                    <span className="material-symbols-outlined text-[20px]">chat</span>
+                    Chat on WhatsApp
+                  </a>
+                )}
 
-              {/* Email CTA */}
-              {provider.email && (
-                <a
-                  href={`mailto:${provider.email}`}
-                  className="flex items-center justify-center gap-3 w-full py-4 rounded-full bg-surface-container-high text-on-surface font-bold mb-8 hover:bg-surface-container-highest transition-colors"
-                >
-                  <span className="material-symbols-outlined">mail</span>
-                  Send Email
-                </a>
-              )}
+                {/* Email CTA */}
+                {provider.email && (
+                  <a
+                    href={`mailto:${provider.email}`}
+                    className="flex items-center justify-center gap-2.5 w-full py-3.5 rounded-full border border-outline-variant text-on-surface font-bold text-sm hover:bg-surface-container-low transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-[20px]">mail</span>
+                    Send Email
+                  </a>
+                )}
+              </div>
 
-              <div className="border-t border-outline-variant pt-8">
-                <h3 className="font-bold text-on-surface mb-4">
-                  Send a message
+              <div className="border-t border-outline-variant pt-6">
+                <h3 className="font-bold text-on-surface text-sm mb-4">
+                  Or send a message
                 </h3>
                 <ContactForm providerName={provider.name} />
               </div>

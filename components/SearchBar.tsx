@@ -84,67 +84,82 @@ export default function SearchBar({ compact = false }: SearchBarProps) {
   return (
     <form
       onSubmit={handleSearch}
-      className="bg-white p-2 md:p-3 rounded-full shadow-2xl flex flex-col md:flex-row gap-2 max-w-3xl mx-auto"
+      className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden max-w-3xl mx-auto"
     >
-      {/* Keyword Input */}
-      <div className="flex-1 flex items-center px-6 py-3 bg-surface-container-low rounded-full">
-        <span className="material-symbols-outlined text-primary mr-3">
-          search
-        </span>
-        <input
-          type="text"
-          placeholder="Search by name or keyword..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="bg-transparent border-none focus:ring-0 w-full text-on-surface placeholder:text-on-surface-variant font-medium text-sm outline-none"
-        />
+      {/* Fields row */}
+      <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-surface-container-high">
+        {/* Keyword Input */}
+        <div className="flex-1 flex items-center px-5 py-4 gap-3">
+          <span className="material-symbols-outlined text-primary flex-shrink-0" style={{ fontSize: "20px" }}>
+            search
+          </span>
+          <div className="flex flex-col min-w-0">
+            <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Keyword</span>
+            <input
+              type="text"
+              placeholder="Photographer, DJ, Caterer..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold text-sm outline-none placeholder:text-on-surface-variant/60 placeholder:font-normal"
+            />
+          </div>
+        </div>
+
+        {/* Category Select */}
+        <div className="flex-1 flex items-center px-5 py-4 gap-3">
+          <span className="material-symbols-outlined text-primary flex-shrink-0" style={{ fontSize: "20px" }}>
+            category
+          </span>
+          <div className="flex flex-col min-w-0 flex-1">
+            <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Category</span>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold cursor-pointer text-sm outline-none"
+            >
+              <option value="">All categories</option>
+              {CATEGORIES.map((c) => (
+                <option key={c.slug} value={c.slug}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Location Select */}
+        <div className="flex-1 flex items-center px-5 py-4 gap-3">
+          <span className="material-symbols-outlined text-primary flex-shrink-0" style={{ fontSize: "20px" }}>
+            location_on
+          </span>
+          <div className="flex flex-col min-w-0 flex-1">
+            <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Location</span>
+            <select
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold cursor-pointer text-sm outline-none"
+            >
+              <option value="">All locations</option>
+              {LOCATIONS.map((l) => (
+                <option key={l} value={l}>
+                  {l}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
       </div>
 
-      {/* Category Select */}
-      <div className="flex-1 flex items-center px-6 py-3 bg-surface-container-low rounded-full">
-        <span className="material-symbols-outlined text-primary mr-3">
-          category
-        </span>
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-medium cursor-pointer text-sm outline-none"
+      {/* Search button row */}
+      <div className="bg-surface-container-lowest px-4 py-3 flex justify-end">
+        <button
+          type="submit"
+          className="bg-primary text-on-primary px-8 py-3 rounded-xl font-bold text-sm hover:bg-primary/90 hover:scale-[1.02] transition-all shadow-md flex items-center gap-2 whitespace-nowrap"
         >
-          <option value="">All Categories</option>
-          {CATEGORIES.map((c) => (
-            <option key={c.slug} value={c.slug}>
-              {c.label}
-            </option>
-          ))}
-        </select>
+          <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>search</span>
+          Search
+        </button>
       </div>
-
-      {/* Location Select */}
-      <div className="flex-1 flex items-center px-6 py-3 bg-surface-container-low rounded-full">
-        <span className="material-symbols-outlined text-primary mr-3">
-          location_on
-        </span>
-        <select
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-medium cursor-pointer text-sm outline-none"
-        >
-          <option value="">All Locations</option>
-          {LOCATIONS.map((l) => (
-            <option key={l} value={l}>
-              {l}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <button
-        type="submit"
-        className="bg-primary text-on-primary px-8 py-3 rounded-full font-bold hover:scale-105 transition-all shadow-lg flex items-center justify-center gap-2 whitespace-nowrap"
-      >
-        <span className="material-symbols-outlined">search</span>
-        Search
-      </button>
     </form>
   );
 }

@@ -1,76 +1,43 @@
 import Image from "next/image";
+import Link from "next/link";
 import SearchBar from "@/components/SearchBar";
 import CategoryCard from "@/components/CategoryCard";
 import ProviderCard from "@/components/ProviderCard";
 import { client } from "@/lib/sanity/client";
-import {
-  featuredProvidersQuery,
-  categoriesQuery,
-} from "@/lib/sanity/queries";
+import { featuredProvidersQuery, categoriesQuery } from "@/lib/sanity/queries";
 
-// Fallback categories shown before Sanity is seeded
+/* ─── Static fallback data ──────────────────────────────────── */
 const STATIC_CATEGORIES = [
-  {
-    name: "Photography",
-    slug: "photography",
-    fallbackImage:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDiiArF6KD-TbHoympV0U_yTrtVSuuxkH28_2dK7r4Ts-yruk_S2D3I-iObad6cZCcBP2lVgZl_oYICkG2nlAX88I40t_k5B9w7rh-MXKzuFIglso2P0J1ofiR5R0keE6DD_ISe2IyvPlNf8w_va3U4BJ2ard2ax3EEQhzG8Zqs2gzDuK0Alz9ZrGd0wHGyCmhFTozTiXfl4cn-vX4xSkHRE9TECPzuNS9bQwGdPEhWz0hDuQcG4dvh1M1HKXgbbqmTvmJcncalUbwN",
-  },
-  {
-    name: "Catering",
-    slug: "catering",
-    fallbackImage:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBSPY4ynTrF1wCOpmpES82-c9veW9_vGW-AMT1Slx_onRSpAVzJt4tpFG0DnPjCYCV3txLAAW7c5E3-c4Dpde4yi1FVTV0NPbeXEIix5Oa6BQDcleFAGO1HEBRvWCnYchbj9kE5KTDKCcyFdhhmxhfsMYcIIORWs-gHmK0Dy1ltxatn9c9GzRVI-pZupYIAo411fIrXyQsOjYBZTxJhtqy6s-PgTNrt42mg7zsbkrDDzrsFadPCAlotQHlCmUITffhY0LHUYgBl1N6c",
-  },
-  {
-    name: "Flowers & Decoration",
-    slug: "flowers-decoration",
-    fallbackImage:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDx0nXhwvTetCL4cmojJrsYqhdFlPQHDDcSiH4CjBVLy669-oGwcGTRYxf3DWRw3JxiWaZ3cORatYev0fB94lO8yLhB2cu_srCXhiQ2_JEQTea-jPWVdZ6ZtlGtZLWCIb8ZiNvxtKDylYjcuBV69xq5OYa3d2SUXN_qbmQ1M78lgk918xIxo3ecZLs-Hk7hbQ6VhdFHGYeTv6YVBPaLmq5KaKZpx8IrITgfrLUm_Uqe5nyUKZuE-B9OrfR7PhZVPD51o_FFXqoC44kG",
-  },
-  {
-    name: "Music / DJ",
-    slug: "music-dj",
-    fallbackImage:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuD01z4NVRwAtNt50DvLGIfoWcTa5HYcK2cYNUJNPFe-bbepIBfLxAi7L2_v5pHMFekkSr4BuJ1hd8ODoAOv-ScrcgrMKzWBpoBK4T44_EuTxG157vR9BaaJf_PXnTaaLwAuSCJbULHIvUW52TK4saeL4Mj-YbPvX66SWbePWtzLWi3kolYpv-oTcfgw9Zg5pMH2YEuQI0C2tz6TQnBTRmqiKIfRO981h_NH_-sIjhW4rQ5f_8Qb4-8rsfupfp8mcjhJcDIZY_BzpBBY",
-  },
-  {
-    name: "Venues",
-    slug: "venues",
-    fallbackImage:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDIcuFM7iUcekGQN-q8Xs3IBb4BRAkG0ij9Z42UXZGsMUgLKpxTtsbflyTGqeKrwfZlAQOLLEYe12BfUldWl3CVjsR8xKbVUgy5DPEq9qaaOqvllXhjAmI2BXge-oQBUObh6xu3e5Umlfq3FXyUlxUrOOoUFWsbWTZEvhOmL6OEBSJnSYEIYBESwP-X_ndEdfeeAUvt64Vg7KLaSFY3jVbogqDjeAoxwaTaQMdm1i6EQHwdOBKdEQpYTvmA-MW0v_QSp62Kb48atgI3",
-  },
-  {
-    name: "Event Planner",
-    slug: "event-planner",
-    fallbackImage:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuCa46dzPf1yB75NFJRz8gB4q-REJXkiJc0EQZN6ocM3iG3ImXGv308iwgNNMpz9NUWrJXtEpoiW2wdKtwFGFc-kNoHFtij-jNoid9IQtue-hpEgRZpeg9LWJkfpQ2DwJc4bB-OKCepGuUtCPK9NFAipUqoQe88l3qnwVzYvPMOFviJYwShwZWLcaNZU8TGxIVvGr7xF-8uGmfj7Gj6mc4Kj9g-3NcsYR_wBL_NtBgmnl_B9Rkk7Px_0jTk-I1qYFHgrGwkHGTmNRx99",
-  },
-  {
-    name: "Decoration",
-    slug: "decoration",
-    fallbackImage:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuANp07CV-QImGcjGea57oE5STbT81aHOV0s37pS1pw_tCrGQ2jrPUV9rFtZ1p7afWI5FFppOEFv0MqmhHTTQMbWlXz4L64ViatP0AQb0bK1oGKiDAqCk9YhzUUDTkWMJqkvTNBu6X1UT9X_7zx1zt9mOXQaRxWjH4UlB5YSHoVyEyeesbfdEeS-fZ-Gu5K8bnaiyBoSHiM4WpvSGobeUTEYcdJSQAIs4Hg9p5Yy1YR_AO27--zEvVxea0XBjJ7ZgI1UMTU48fHA6qSl",
-  },
+  { name: "Photography", slug: "photography", fallbackImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuDiiArF6KD-TbHoympV0U_yTrtVSuuxkH28_2dK7r4Ts-yruk_S2D3I-iObad6cZCcBP2lVgZl_oYICkG2nlAX88I40t_k5B9w7rh-MXKzuFIglso2P0J1ofiR5R0keE6DD_ISe2IyvPlNf8w_va3U4BJ2ard2ax3EEQhzG8Zqs2gzDuK0Alz9ZrGd0wHGyCmhFTozTiXfl4cn-vX4xSkHRE9TECPzuNS9bQwGdPEhWz0hDuQcG4dvh1M1HKXgbbqmTvmJcncalUbwN" },
+  { name: "Catering", slug: "catering", fallbackImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuBSPY4ynTrF1wCOpmpES82-c9veW9_vGW-AMT1Slx_onRSpAVzJt4tpFG0DnPjCYCV3txLAAW7c5E3-c4Dpde4yi1FVTV0NPbeXEIix5Oa6BQDcleFAGO1HEBRvWCnYchbj9kE5KTDKCcyFdhhmxhfsMYcIIORWs-gHmK0Dy1ltxatn9c9GzRVI-pZupYIAo411fIrXyQsOjYBZTxJhtqy6s-PgTNrt42mg7zsbkrDDzrsFadPCAlotQHlCmUITffhY0LHUYgBl1N6c" },
+  { name: "Flowers & Decoration", slug: "flowers-decoration", fallbackImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuDx0nXhwvTetCL4cmojJrsYqhdFlPQHDDcSiH4CjBVLy669-oGwcGTRYxf3DWRw3JxiWaZ3cORatYev0fB94lO8yLhB2cu_srCXhiQ2_JEQTea-jPWVdZ6ZtlGtZLWCIb8ZiNvxtKDylYjcuBV69xq5OYa3d2SUXN_qbmQ1M78lgk918xIxo3ecZLs-Hk7hbQ6VhdFHGYeTv6YVBPaLmq5KaKZpx8IrITgfrLUm_Uqe5nyUKZuE-B9OrfR7PhZVPD51o_FFXqoC44kG" },
+  { name: "Music / DJ", slug: "music-dj", fallbackImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuD01z4NVRwAtNt50DvLGIfoWcTa5HYcK2cYNUJNPFe-bbepIBfLxAi7L2_v5pHMFekkSr4BuJ1hd8ODoAOv-ScrcgrMKzWBpoBK4T44_EuTxG157vR9BaaJf_PXnTaaLwAuSCJbULHIvUW52TK4saeL4Mj-YbPvX66SWbePWtzLWi3kolYpv-oTcfgw9Zg5pMH2YEuQI0C2tz6TQnBTRmqiKIfRO981h_NH_-sIjhW4rQ5f_8Qb4-8rsfupfp8mcjhJcDIZY_BzpBBY" },
+  { name: "Venues", slug: "venues", fallbackImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuDIcuFM7iUcekGQN-q8Xs3IBb4BRAkG0ij9Z42UXZGsMUgLKpxTtsbflyTGqeKrwfZlAQOLLEYe12BfUldWl3CVjsR8xKbVUgy5DPEq9qaaOqvllXhjAmI2BXge-oQBUObh6xu3e5Umlfq3FXyUlxUrOOoUFWsbWTZEvhOmL6OEBSJnSYEIYBESwP-X_ndEdfeeAUvt64Vg7KLaSFY3jVbogqDjeAoxwaTaQMdm1i6EQHwdOBKdEQpYTvmA-MW0v_QSp62Kb48atgI3" },
+  { name: "Event Planner", slug: "event-planner", fallbackImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuCa46dzPf1yB75NFJRz8gB4q-REJXkiJc0EQZN6ocM3iG3ImXGv308iwgNNMpz9NUWrJXtEpoiW2wdKtwFGFc-kNoHFtij-jNoid9IQtue-hpEgRZpeg9LWJkfpQ2DwJc4bB-OKCepGuUtCPK9NFAipUqoQe88l3qnwVzYvPMOFviJYwShwZWLcaNZU8TGxIVvGr7xF-8uGmfj7Gj6mc4Kj9g-3NcsYR_wBL_NtBgmnl_B9Rkk7Px_0jTk-I1qYFHgrGwkHGTmNRx99" },
+  { name: "Decoration", slug: "decoration", fallbackImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuANp07CV-QImGcjGea57oE5STbT81aHOV0s37pS1pw_tCrGQ2jrPUV9rFtZ1p7afWI5FFppOEFv0MqmhHTTQMbWlXz4L64ViatP0AQb0bK1oGKiDAqCk9YhzUUDTkWMJqkvTNBu6X1UT9X_7zx1zt9mOXQaRxWjH4UlB5YSHoVyEyeesbfdEeS-fZ-Gu5K8bnaiyBoSHiM4WpvSGobeUTEYcdJSQAIs4Hg9p5Yy1YR_AO27--zEvVxea0XBjJ7ZgI1UMTU48fHA6qSl" },
 ];
 
-type SanityCategory = {
-  _id: string;
-  name: string;
-  slug: string;
-  image?: { asset?: { _ref: string } };
-};
+const DEMO_PROVIDERS = [
+  { name: "Culinaria Mauritius", slug: "culinaria-mauritius", shortDescription: "Gourmet catering specialists for premium weddings and corporate events.", location: "Beau Plan, Pamplemousses", rating: 4.9, fallbackImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuAHdh41vaarfEY61xlmCVmdpqwyy35xcFPpggBMfGCaBD946oYXjgiFHlpNVJp363hflS8NcDMWPTzE1VgepsOH0TBB0x76264JrAvzL8sXq8v7x6fqhp-efLGA3EAAEFv1bV1zHkqvzbmi_NMwPzEAH16-XH6qrY-xJaHRb1NHnoxKiUtG30sB9BUQCc1HDJ5ww8RlaNwR4MGRAZsCmTTNInKTw9sXvjwRAyfDRIYyv_1F8AuPLdmGTOqtOYXaW9oxdIgtkoN2iWCW" },
+  { name: "Oceanic Frames", slug: "oceanic-frames", shortDescription: "Capturing timeless moments on Mauritius's most breathtaking coastlines.", location: "Tamarin, Black River", rating: 5.0, fallbackImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuDWDWfYnAl-14-43vB4p3fEmlehY-uPBnIz-HkkWZFgVGrIguvbeuFmtdTi5pw_zZg65rkRjU-NRKyuvORn4GOx-aMXDJujxFpeKDaYo1BQd-ghNGG857HYorxoLxRjSj5lZnfiyvPu539WWUYqx76fUeXfO9-mCtsv-UxxRJg2V1YIKX5LoN_SiA3N56dcU6pumKsd9DWsKdf2xeeFJrtN-WRXLs2Jb0oufSKid934ZMPKHazGvyqcIbjf-E8bTMvXshQgFSIg59LU" },
+  { name: "Elite Event Design", slug: "elite-event-design", shortDescription: "Luxury floral and décor transformations for weddings and galas island-wide.", location: "Ebene, Mauritius", rating: 4.8, fallbackImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuB7Y8hFJv2XfZp_6X2ZXz2V3ZNoLvKUGwvvKCLvhNF3FaqhiJLxPaURFrbEJKNKnGsd7eOJLNtWM9q6FDt4ZlEr8qQmF7u0vvA_3WRX0HbwLaXXoUiwTOr6RaX7YeR_SAMPVls6qHBy399ZFc8pbDjGFHpn1MCgt6euRy7FT-TVhmNytzVi9wU8ydyHGzEnOiFViZ9qvrMGMDgPZ4pQQBfhRgS9Af5II6g0ViSQ-UJWyQDEQmKfV5Q1M2kl66peXNFxhaGo8VVUolzl" },
+];
 
-type SanityProvider = {
-  _id: string;
-  name: string;
-  slug: string;
-  shortDescription?: string;
-  location?: string;
-  rating?: number;
-  priceRange?: string;
-  images?: Array<{ asset?: { _ref: string } }>;
-};
+const STATS = [
+  { value: "7+", label: "Categories" },
+  { value: "100%", label: "Verified" },
+  { value: "Free", label: "To browse" },
+  { value: "Mauritius", label: "Island-wide" },
+];
+
+const HOW_IT_WORKS = [
+  { icon: "search", step: "01", title: "Search & Browse", desc: "Explore providers by category, location, or keyword." },
+  { icon: "person_check", step: "02", title: "View Profiles", desc: "Browse galleries, read descriptions, and compare prices." },
+  { icon: "chat", step: "03", title: "Contact Directly", desc: "Reach out via WhatsApp or the contact form instantly." },
+];
+
+type SanityCategory = { _id: string; name: string; slug: string; image?: { asset?: { _ref: string } } };
+type SanityProvider = { _id: string; name: string; slug: string; shortDescription?: string; location?: string; rating?: number; priceRange?: string; images?: Array<{ asset?: { _ref: string } }> };
 
 export default async function HomePage() {
   let featuredProviders: SanityProvider[] = [];
@@ -81,139 +48,224 @@ export default async function HomePage() {
       client.fetch(featuredProvidersQuery),
       client.fetch(categoriesQuery),
     ]);
-  } catch {
-    // Sanity not yet configured — fall back to static data
-  }
+  } catch { /* Sanity not yet configured */ }
 
-  const displayCategories =
-    categories.length > 0
-      ? categories.map((c) => ({
-          name: c.name,
-          slug: c.slug,
-          image: c.image,
-          fallbackImage: undefined as string | undefined,
-        }))
-      : STATIC_CATEGORIES.map((c) => ({
-          name: c.name,
-          slug: c.slug,
-          image: undefined as { asset?: { _ref: string } } | undefined,
-          fallbackImage: c.fallbackImage,
-        }));
+  const displayCategories = categories.length > 0
+    ? categories.map((c) => ({ name: c.name, slug: c.slug, image: c.image, fallbackImage: undefined as string | undefined }))
+    : STATIC_CATEGORIES.map((c) => ({ name: c.name, slug: c.slug, image: undefined as { asset?: { _ref: string } } | undefined, fallbackImage: c.fallbackImage }));
+
+  const showDemoProviders = featuredProviders.length === 0;
 
   return (
     <div className="overflow-hidden">
-      {/* Hero Section */}
-      <section className="relative h-[819px] w-full flex items-center justify-center pt-16">
+
+      {/* ─── Hero ──────────────────────────────────────────────── */}
+      <section className="relative min-h-[640px] md:min-h-[820px] w-full flex items-center justify-center">
+        {/* Background image */}
         <div className="absolute inset-0 z-0">
           <Image
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1UIxBjfPNrLYRWHngEVO9bLwfJFugLFPldM7gJs7DA-eDEVZyFaJRUh8iv3ryoOODRXCVAbLF-eG8TCSOqcAVlLoacKJCr3o8dV8FFsdpwx0drhyZ-8Yk3J29tkZaH_EWe2xfHJVaqTW2_12Xod1QYNlQkwg0BHI9lSsUKklyk6GlMQvzPNLt87RqXELs0oZmgwg93Q-YoDt91wE3cEJQdX2dE-wX2b4eJFRc_LnbR0nVTRxUkRf8NurOBcshoiNCFEkzAgdvALNM"
-            alt="Luxury beach wedding in Mauritius"
+            alt="Luxury beach wedding setup in Mauritius"
             fill
-            className="object-cover"
+            className="object-cover object-center"
             priority
           />
-          <div className="absolute inset-0 bg-black/30" />
+          {/* Multi-layer overlay for depth */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/25 to-black/60" />
         </div>
 
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-          <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 tracking-tight drop-shadow-lg">
-            Find the perfect services for your event
+        {/* Hero content */}
+        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto pt-20 pb-16">
+          <span className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm text-white/90 border border-white/20 text-xs font-semibold px-4 py-2 rounded-full mb-6 tracking-wider uppercase">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" />
+            Mauritius — Indian Ocean
+          </span>
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white mb-5 tracking-tight leading-[1.1]">
+            Find the perfect<br className="hidden md:block" /> services for your event
           </h1>
-          <p className="text-lg md:text-xl text-white/90 mb-10 font-medium">
-            Curated local experts for weddings, galas, and intimate celebrations
-            in Mauritius.
+          <p className="text-base md:text-xl text-white/85 mb-10 font-medium max-w-2xl mx-auto leading-relaxed">
+            Curated local experts for weddings, galas, and intimate celebrations across the island.
           </p>
           <SearchBar />
+
+          {/* Quick category pills */}
+          <div className="flex flex-wrap justify-center gap-2 mt-8">
+            {["Photography", "Venues", "Catering", "Music / DJ"].map((cat) => (
+              <Link
+                key={cat}
+                href={`/categories/${cat.toLowerCase().replace(/ \/ /g, "-").replace(/ /g, "-")}`}
+                className="bg-white/15 backdrop-blur-sm text-white border border-white/20 text-xs font-semibold px-4 py-2 rounded-full hover:bg-white/25 transition-colors"
+              >
+                {cat}
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Category Section */}
-      <section className="max-w-[1200px] mx-auto px-6 py-24">
-        <div className="flex items-end justify-between mb-12">
+      {/* ─── Stats bar ─────────────────────────────────────────── */}
+      <div className="bg-white border-b border-surface-container-high">
+        <div className="max-w-[1200px] mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-surface-container-high">
+            {STATS.map((stat) => (
+              <div key={stat.label} className="flex flex-col items-center justify-center py-6 px-4 text-center">
+                <p className="text-2xl md:text-3xl font-extrabold text-primary font-headline leading-none mb-1">{stat.value}</p>
+                <p className="text-xs text-on-surface-variant font-medium tracking-wide">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ─── Categories ────────────────────────────────────────── */}
+      <section className="max-w-[1200px] mx-auto px-6 py-20 md:py-28">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
           <div>
-            <span className="text-primary font-bold tracking-widest text-xs uppercase mb-2 block">
-              Curation
-            </span>
+            <span className="section-label">What are you looking for?</span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-on-surface">
               Explore by Category
             </h2>
           </div>
-          <div className="hidden md:block h-[2px] flex-1 bg-surface-container-high mx-12 mb-4" />
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-          {displayCategories.map((cat, i) => (
+        {/* 4-col grid: 7 category cards + 1 "View all" CTA card = perfect 4×2 */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+          {displayCategories.map((cat) => (
             <CategoryCard
               key={cat.slug}
               name={cat.name}
               slug={cat.slug}
               image={cat.image}
               fallbackImage={cat.fallbackImage}
-              className={i === 6 ? "md:col-span-2 lg:col-span-1" : ""}
             />
           ))}
+          {/* 8th slot — View all CTA */}
+          <Link
+            href="/categories/photography"
+            className="group relative aspect-square rounded overflow-hidden flex flex-col items-center justify-center bg-primary-fixed border-2 border-dashed border-primary/30 hover:bg-primary hover:border-primary transition-all duration-300 cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-4xl text-primary group-hover:text-on-primary mb-3 transition-colors duration-300">
+              grid_view
+            </span>
+            <p className="text-primary group-hover:text-on-primary font-bold text-sm text-center leading-tight transition-colors duration-300">
+              View all<br />categories
+            </p>
+            <span className="material-symbols-outlined text-primary group-hover:text-on-primary mt-2 transition-colors duration-300" style={{ fontSize: "18px" }}>
+              arrow_forward
+            </span>
+          </Link>
         </div>
       </section>
 
-      {/* Featured Providers */}
-      {featuredProviders.length > 0 && (
-        <section className="bg-surface-container-low py-24">
-          <div className="max-w-[1200px] mx-auto px-6">
-            <div className="flex items-center justify-between mb-12">
+      {/* ─── How it works ──────────────────────────────────────── */}
+      <section className="bg-surface-container-low py-20 md:py-24">
+        <div className="max-w-[1200px] mx-auto px-6">
+          <div className="text-center mb-16">
+            <span className="section-label">Simple process</span>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-on-surface">
+              How it works
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+            {/* Connector line (desktop only) */}
+            <div className="hidden md:block absolute top-8 left-[calc(16.67%+1rem)] right-[calc(16.67%+1rem)] h-px bg-outline-variant" />
+
+            {HOW_IT_WORKS.map((step, i) => (
+              <div key={step.step} className="text-center group relative">
+                {/* Step number badge */}
+                <div className="relative inline-block mb-5">
+                  <div className="w-16 h-16 rounded-full bg-white shadow-md border border-outline-variant/40 mx-auto flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
+                    <span className="material-symbols-outlined text-primary text-2xl group-hover:text-on-primary transition-colors duration-300">
+                      {step.icon}
+                    </span>
+                  </div>
+                  <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-primary text-on-primary text-[10px] font-extrabold flex items-center justify-center shadow-sm">
+                    {i + 1}
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-on-surface mb-2">{step.title}</h3>
+                <p className="text-on-surface-variant text-sm leading-relaxed max-w-xs mx-auto">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Featured Providers ────────────────────────────────── */}
+      <section className="py-20 md:py-28">
+        <div className="max-w-[1200px] mx-auto px-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+            <div>
+              <span className="section-label">Top-rated in Mauritius</span>
               <h2 className="text-3xl md:text-4xl font-extrabold text-on-surface">
                 Featured Providers
               </h2>
-              <a
-                href="/categories/photography"
-                className="text-primary font-bold flex items-center gap-1 hover:underline"
-              >
-                Explore all{" "}
-                <span className="material-symbols-outlined">arrow_forward</span>
-              </a>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {featuredProviders.map((p) => (
-                <ProviderCard
-                  key={p._id}
-                  name={p.name}
-                  slug={p.slug}
-                  shortDescription={p.shortDescription}
-                  location={p.location}
-                  rating={p.rating}
-                  priceRange={p.priceRange}
-                  images={p.images}
-                />
-              ))}
-            </div>
+            <Link href="/categories/photography" className="text-primary font-bold text-sm flex items-center gap-1.5 hover:gap-2.5 transition-all self-start md:self-auto">
+              Explore all providers
+              <span className="material-symbols-outlined text-base">arrow_forward</span>
+            </Link>
           </div>
-        </section>
-      )}
 
-      {/* Newsletter CTA */}
-      <section className="max-w-[1200px] mx-auto px-6 py-24">
-        <div className="bg-primary-container rounded p-12 relative overflow-hidden text-on-primary-container flex flex-col md:flex-row items-center gap-12">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-primary rounded-full blur-[100px] opacity-30 -mr-32 -mt-32" />
-          <div className="flex-1 relative z-10">
-            <h2 className="text-3xl md:text-4xl font-extrabold mb-4">
-              Plan your island dream event
-            </h2>
-            <p className="text-lg opacity-90 max-w-lg">
-              Get exclusive access to the best providers and planning guides for
-              Mauritius.
-            </p>
-          </div>
-          <div className="w-full md:w-auto flex flex-col sm:flex-row gap-4 relative z-10">
-            <input
-              type="email"
-              placeholder="Your email address"
-              className="bg-white/10 border border-white/20 text-white placeholder:text-white/60 rounded-full px-8 py-4 min-w-[300px] focus:ring-2 focus:ring-white outline-none"
-            />
-            <button className="bg-white text-primary font-bold px-10 py-4 rounded-full hover:scale-105 transition-all">
-              Join Us
-            </button>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
+            {showDemoProviders
+              ? DEMO_PROVIDERS.map((p) => (
+                  <ProviderCard
+                    key={p.slug}
+                    name={p.name}
+                    slug={p.slug}
+                    shortDescription={p.shortDescription}
+                    location={p.location}
+                    rating={p.rating}
+                    fallbackImage={p.fallbackImage}
+                  />
+                ))
+              : featuredProviders.map((p) => (
+                  <ProviderCard
+                    key={p._id}
+                    name={p.name}
+                    slug={p.slug}
+                    shortDescription={p.shortDescription}
+                    location={p.location}
+                    rating={p.rating}
+                    priceRange={p.priceRange}
+                    images={p.images}
+                  />
+                ))}
           </div>
         </div>
       </section>
+
+      {/* ─── Newsletter CTA ─────────────────────────────────────── */}
+      <section className="max-w-[1200px] mx-auto px-6 pb-24">
+        <div className="relative overflow-hidden rounded-xl md:rounded-2xl bg-primary-container text-on-primary-container">
+          {/* Decorative blobs */}
+          <div className="absolute -top-20 -right-20 w-72 h-72 bg-primary rounded-full blur-[80px] opacity-40 pointer-events-none" />
+          <div className="absolute -bottom-16 -left-16 w-56 h-56 bg-secondary-container rounded-full blur-[80px] opacity-30 pointer-events-none" />
+
+          <div className="relative z-10 flex flex-col md:flex-row items-center gap-10 p-8 md:p-14">
+            <div className="flex-1 text-center md:text-left">
+              <h2 className="text-2xl md:text-4xl font-extrabold mb-3 leading-tight">
+                Plan your island dream event
+              </h2>
+              <p className="text-base opacity-85 max-w-md leading-relaxed">
+                Get exclusive access to the best providers and planning guides for Mauritius.
+              </p>
+            </div>
+            <div className="w-full md:w-auto flex flex-col sm:flex-row gap-3">
+              <input
+                type="email"
+                placeholder="Your email address"
+                className="flex-1 md:w-72 bg-white/15 border border-white/25 text-white placeholder:text-white/55 rounded-full px-6 py-3.5 focus:ring-2 focus:ring-white outline-none text-sm"
+              />
+              <button className="bg-white text-primary font-bold px-8 py-3.5 rounded-full hover:scale-105 active:scale-95 transition-all text-sm whitespace-nowrap shadow-lg">
+                Join Us
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 }

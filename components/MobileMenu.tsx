@@ -21,7 +21,7 @@ const CATEGORIES = [
   { label: "Decoration", slug: "decoration" },
 ];
 
-export default function MobileMenu() {
+export default function MobileMenu({ transparent = false }: { transparent?: boolean }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
@@ -29,7 +29,7 @@ export default function MobileMenu() {
     <>
       {/* Hamburger Button */}
       <button
-        className="md:hidden flex items-center justify-center w-10 h-10 text-orange-900"
+        className={`md:hidden flex items-center justify-center w-10 h-10 transition-colors ${transparent ? "text-white" : "text-orange-900"}`}
         onClick={() => setOpen(!open)}
         aria-label="Toggle menu"
       >
