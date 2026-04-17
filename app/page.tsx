@@ -8,19 +8,19 @@ import { featuredProvidersQuery, categoriesQuery } from "@/lib/sanity/queries";
 
 /* ─── Static fallback data ──────────────────────────────────── */
 const STATIC_CATEGORIES = [
-  { name: "Photography", slug: "photography", fallbackImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuDiiArF6KD-TbHoympV0U_yTrtVSuuxkH28_2dK7r4Ts-yruk_S2D3I-iObad6cZCcBP2lVgZl_oYICkG2nlAX88I40t_k5B9w7rh-MXKzuFIglso2P0J1ofiR5R0keE6DD_ISe2IyvPlNf8w_va3U4BJ2ard2ax3EEQhzG8Zqs2gzDuK0Alz9ZrGd0wHGyCmhFTozTiXfl4cn-vX4xSkHRE9TECPzuNS9bQwGdPEhWz0hDuQcG4dvh1M1HKXgbbqmTvmJcncalUbwN" },
-  { name: "Catering", slug: "catering", fallbackImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuBSPY4ynTrF1wCOpmpES82-c9veW9_vGW-AMT1Slx_onRSpAVzJt4tpFG0DnPjCYCV3txLAAW7c5E3-c4Dpde4yi1FVTV0NPbeXEIix5Oa6BQDcleFAGO1HEBRvWCnYchbj9kE5KTDKCcyFdhhmxhfsMYcIIORWs-gHmK0Dy1ltxatn9c9GzRVI-pZupYIAo411fIrXyQsOjYBZTxJhtqy6s-PgTNrt42mg7zsbkrDDzrsFadPCAlotQHlCmUITffhY0LHUYgBl1N6c" },
-  { name: "Flowers & Decoration", slug: "flowers-decoration", fallbackImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuDx0nXhwvTetCL4cmojJrsYqhdFlPQHDDcSiH4CjBVLy669-oGwcGTRYxf3DWRw3JxiWaZ3cORatYev0fB94lO8yLhB2cu_srCXhiQ2_JEQTea-jPWVdZ6ZtlGtZLWCIb8ZiNvxtKDylYjcuBV69xq5OYa3d2SUXN_qbmQ1M78lgk918xIxo3ecZLs-Hk7hbQ6VhdFHGYeTv6YVBPaLmq5KaKZpx8IrITgfrLUm_Uqe5nyUKZuE-B9OrfR7PhZVPD51o_FFXqoC44kG" },
-  { name: "Music / DJ", slug: "music-dj", fallbackImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuD01z4NVRwAtNt50DvLGIfoWcTa5HYcK2cYNUJNPFe-bbepIBfLxAi7L2_v5pHMFekkSr4BuJ1hd8ODoAOv-ScrcgrMKzWBpoBK4T44_EuTxG157vR9BaaJf_PXnTaaLwAuSCJbULHIvUW52TK4saeL4Mj-YbPvX66SWbePWtzLWi3kolYpv-oTcfgw9Zg5pMH2YEuQI0C2tz6TQnBTRmqiKIfRO981h_NH_-sIjhW4rQ5f_8Qb4-8rsfupfp8mcjhJcDIZY_BzpBBY" },
-  { name: "Venues", slug: "venues", fallbackImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuDIcuFM7iUcekGQN-q8Xs3IBb4BRAkG0ij9Z42UXZGsMUgLKpxTtsbflyTGqeKrwfZlAQOLLEYe12BfUldWl3CVjsR8xKbVUgy5DPEq9qaaOqvllXhjAmI2BXge-oQBUObh6xu3e5Umlfq3FXyUlxUrOOoUFWsbWTZEvhOmL6OEBSJnSYEIYBESwP-X_ndEdfeeAUvt64Vg7KLaSFY3jVbogqDjeAoxwaTaQMdm1i6EQHwdOBKdEQpYTvmA-MW0v_QSp62Kb48atgI3" },
-  { name: "Event Planner", slug: "event-planner", fallbackImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuCa46dzPf1yB75NFJRz8gB4q-REJXkiJc0EQZN6ocM3iG3ImXGv308iwgNNMpz9NUWrJXtEpoiW2wdKtwFGFc-kNoHFtij-jNoid9IQtue-hpEgRZpeg9LWJkfpQ2DwJc4bB-OKCepGuUtCPK9NFAipUqoQe88l3qnwVzYvPMOFviJYwShwZWLcaNZU8TGxIVvGr7xF-8uGmfj7Gj6mc4Kj9g-3NcsYR_wBL_NtBgmnl_B9Rkk7Px_0jTk-I1qYFHgrGwkHGTmNRx99" },
-  { name: "Decoration", slug: "decoration", fallbackImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuANp07CV-QImGcjGea57oE5STbT81aHOV0s37pS1pw_tCrGQ2jrPUV9rFtZ1p7afWI5FFppOEFv0MqmhHTTQMbWlXz4L64ViatP0AQb0bK1oGKiDAqCk9YhzUUDTkWMJqkvTNBu6X1UT9X_7zx1zt9mOXQaRxWjH4UlB5YSHoVyEyeesbfdEeS-fZ-Gu5K8bnaiyBoSHiM4WpvSGobeUTEYcdJSQAIs4Hg9p5Yy1YR_AO27--zEvVxea0XBjJ7ZgI1UMTU48fHA6qSl" },
+  { name: "Photography", slug: "photography", fallbackImage: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80" },
+  { name: "Catering", slug: "catering", fallbackImage: "https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=800&q=80" },
+  { name: "Flowers & Decoration", slug: "flowers-decoration", fallbackImage: "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?auto=format&fit=crop&w=800&q=80" },
+  { name: "Music / DJ", slug: "music-dj", fallbackImage: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=800&q=80" },
+  { name: "Venues", slug: "venues", fallbackImage: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=800&q=80" },
+  { name: "Event Planner", slug: "event-planner", fallbackImage: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=800&q=80" },
+  { name: "Decoration", slug: "decoration", fallbackImage: "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=800&q=80" },
 ];
 
 const DEMO_PROVIDERS = [
-  { name: "Culinaria Mauritius", slug: "culinaria-mauritius", shortDescription: "Gourmet catering specialists for premium weddings and corporate events.", location: "Beau Plan, Pamplemousses", rating: 4.9, fallbackImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuAHdh41vaarfEY61xlmCVmdpqwyy35xcFPpggBMfGCaBD946oYXjgiFHlpNVJp363hflS8NcDMWPTzE1VgepsOH0TBB0x76264JrAvzL8sXq8v7x6fqhp-efLGA3EAAEFv1bV1zHkqvzbmi_NMwPzEAH16-XH6qrY-xJaHRb1NHnoxKiUtG30sB9BUQCc1HDJ5ww8RlaNwR4MGRAZsCmTTNInKTw9sXvjwRAyfDRIYyv_1F8AuPLdmGTOqtOYXaW9oxdIgtkoN2iWCW" },
-  { name: "Oceanic Frames", slug: "oceanic-frames", shortDescription: "Capturing timeless moments on Mauritius's most breathtaking coastlines.", location: "Tamarin, Black River", rating: 5.0, fallbackImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuDWDWfYnAl-14-43vB4p3fEmlehY-uPBnIz-HkkWZFgVGrIguvbeuFmtdTi5pw_zZg65rkRjU-NRKyuvORn4GOx-aMXDJujxFpeKDaYo1BQd-ghNGG857HYorxoLxRjSj5lZnfiyvPu539WWUYqx76fUeXfO9-mCtsv-UxxRJg2V1YIKX5LoN_SiA3N56dcU6pumKsd9DWsKdf2xeeFJrtN-WRXLs2Jb0oufSKid934ZMPKHazGvyqcIbjf-E8bTMvXshQgFSIg59LU" },
-  { name: "Elite Event Design", slug: "elite-event-design", shortDescription: "Luxury floral and décor transformations for weddings and galas island-wide.", location: "Ebene, Mauritius", rating: 4.8, fallbackImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuB7Y8hFJv2XfZp_6X2ZXz2V3ZNoLvKUGwvvKCLvhNF3FaqhiJLxPaURFrbEJKNKnGsd7eOJLNtWM9q6FDt4ZlEr8qQmF7u0vvA_3WRX0HbwLaXXoUiwTOr6RaX7YeR_SAMPVls6qHBy399ZFc8pbDjGFHpn1MCgt6euRy7FT-TVhmNytzVi9wU8ydyHGzEnOiFViZ9qvrMGMDgPZ4pQQBfhRgS9Af5II6g0ViSQ-UJWyQDEQmKfV5Q1M2kl66peXNFxhaGo8VVUolzl" },
+  { name: "Culinaria Mauritius", slug: "culinaria-mauritius", shortDescription: "Gourmet catering specialists for premium weddings and corporate events.", location: "Beau Plan, Pamplemousses", rating: 4.9, fallbackImage: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80" },
+  { name: "Oceanic Frames", slug: "oceanic-frames", shortDescription: "Capturing timeless moments on Mauritius's most breathtaking coastlines.", location: "Tamarin, Black River", rating: 5.0, fallbackImage: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=800&q=80" },
+  { name: "Elite Event Design", slug: "elite-event-design", shortDescription: "Luxury floral and décor transformations for weddings and galas island-wide.", location: "Ebene, Mauritius", rating: 4.8, fallbackImage: "https://images.unsplash.com/photo-1487530811176-3780de880c2d?auto=format&fit=crop&w=800&q=80" },
 ];
 
 const STATS = [
@@ -64,7 +64,7 @@ export default async function HomePage() {
         {/* Background image */}
         <div className="absolute inset-0 z-0">
           <Image
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1UIxBjfPNrLYRWHngEVO9bLwfJFugLFPldM7gJs7DA-eDEVZyFaJRUh8iv3ryoOODRXCVAbLF-eG8TCSOqcAVlLoacKJCr3o8dV8FFsdpwx0drhyZ-8Yk3J29tkZaH_EWe2xfHJVaqTW2_12Xod1QYNlQkwg0BHI9lSsUKklyk6GlMQvzPNLt87RqXELs0oZmgwg93Q-YoDt91wE3cEJQdX2dE-wX2b4eJFRc_LnbR0nVTRxUkRf8NurOBcshoiNCFEkzAgdvALNM"
+            src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1920&q=80"
             alt="Luxury beach wedding setup in Mauritius"
             fill
             className="object-cover object-center"
