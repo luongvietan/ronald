@@ -2,6 +2,7 @@ import { client } from "@/lib/sanity/client";
 import { providerBySlugQuery, allProviderSlugsQuery } from "@/lib/sanity/queries";
 import { urlFor } from "@/lib/sanity/image";
 import ContactForm from "@/components/ContactForm";
+import ProviderAnimations from "@/components/animations/ProviderAnimations";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
@@ -99,13 +100,17 @@ export default async function ProviderPage({
   };
 
   return (
-    <div className="pt-20">
+    <div className="pt-20" data-page="provider">
+      <ProviderAnimations />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       <section className="w-full bg-surface-container-lowest">
         {images.length > 0 ? (
           <>
-            <div className="md:hidden flex gap-2 overflow-x-auto px-4 py-3 snap-x snap-mandatory scrollbar-none">
+            <div
+              data-provider-gallery
+              className="md:hidden flex gap-2 overflow-x-auto px-4 py-3 snap-x snap-mandatory scrollbar-none"
+            >
               {images.slice(0, 6).map((img, i) => (
                 <div key={i} className="relative flex-none w-72 aspect-video rounded overflow-hidden snap-start">
                   {img?.asset?._ref && (
@@ -120,7 +125,7 @@ export default async function ProviderPage({
                 </div>
               ))}
             </div>
-            <div className="hidden md:grid grid-cols-4 h-[480px] gap-1">
+            <div data-provider-gallery className="hidden md:grid grid-cols-4 h-[480px] gap-1">
               <div className="col-span-2 row-span-2 relative overflow-hidden">
                 {images[0]?.asset?._ref && (
                   <Image
@@ -173,7 +178,7 @@ export default async function ProviderPage({
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           <div className="lg:col-span-2">
-            <div className="mb-8">
+            <div data-provider-head className="mb-8">
               {provider.category && (
                 <span className="inline-block bg-primary-fixed text-on-primary-fixed text-xs font-bold px-3 py-1 rounded-full mb-3">
                   {provider.category.name}
@@ -204,14 +209,14 @@ export default async function ProviderPage({
             </div>
 
             {provider.description && (
-              <div className="mb-10">
+              <div data-provider-about className="mb-10">
                 <h2 className="text-xl font-bold text-on-surface mb-4">{t("about")}</h2>
                 <p className="text-on-surface-variant leading-relaxed whitespace-pre-line">{provider.description}</p>
               </div>
             )}
 
             {provider.services && provider.services.length > 0 && (
-              <div>
+              <div data-provider-services>
                 <h2 className="text-xl font-bold text-on-surface mb-4">{t("services")}</h2>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {provider.services.map((service, i) => (
@@ -226,7 +231,10 @@ export default async function ProviderPage({
           </div>
 
           <aside className="lg:col-span-1">
-            <div className="bg-surface-container-lowest rounded-[1.5rem] p-7 shadow-md sticky top-24 border border-outline-variant/40">
+            <div
+              data-provider-sidebar
+              className="bg-surface-container-lowest rounded-[1.5rem] p-7 shadow-md sticky top-24 border border-outline-variant/40"
+            >
               <p className="text-xs font-bold text-primary uppercase tracking-widest mb-1">{t("getInTouch")}</p>
               <h2 className="text-xl font-extrabold text-on-surface mb-5 font-headline">{t("contactName", { name: provider.name })}</h2>
 

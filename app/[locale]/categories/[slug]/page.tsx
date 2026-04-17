@@ -2,6 +2,7 @@ import { client } from "@/lib/sanity/client";
 import { providersByCategoryQuery, categoriesQuery, allCategorySlugsQuery } from "@/lib/sanity/queries";
 import ProviderCard from "@/components/ProviderCard";
 import CategoryFilters from "@/components/CategoryFilters";
+import CategoryAnimations from "@/components/animations/CategoryAnimations";
 import { Link } from "@/i18n/navigation";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -93,10 +94,11 @@ export default async function CategoryPage({
     .join(" ");
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" data-page="category">
+      <CategoryAnimations />
       <div className="bg-surface-container-lowest border-b border-outline-variant/40 pt-24 pb-8">
-        <div className="max-w-[1200px] mx-auto px-6">
-          <div className="flex items-center gap-1.5 text-on-surface-variant text-sm mb-5">
+        <div className="max-w-[1200px] mx-auto px-6" data-cat-header>
+          <div data-cat-breadcrumb className="flex items-center gap-1.5 text-on-surface-variant text-sm mb-5">
             <Link href="/" className="hover:text-primary transition-colors">
               {t("breadcrumbHome")}
             </Link>
@@ -124,7 +126,7 @@ export default async function CategoryPage({
           </div>
 
           {allCategories.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-6 -mx-1">
+            <div data-cat-pills className="flex flex-wrap gap-2 mt-6 -mx-1">
               {allCategories.map((cat) => (
                 <Link
                   key={cat.slug}
@@ -145,10 +147,12 @@ export default async function CategoryPage({
       </div>
 
       <div className="max-w-[1200px] mx-auto px-6 py-10">
-        <CategoryFilters currentLocation={location} currentQ={q} />
+        <div data-cat-filters>
+          <CategoryFilters currentLocation={location} currentQ={q} />
+        </div>
 
         {providers.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div data-cat-grid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {providers.map((p) => (
               <ProviderCard
                 key={p._id}
@@ -163,7 +167,7 @@ export default async function CategoryPage({
             ))}
           </div>
         ) : (
-          <div className="text-center py-28">
+          <div data-cat-empty className="text-center py-28">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-surface-container mb-6">
               <span className="material-symbols-outlined text-5xl text-outline">search_off</span>
             </div>

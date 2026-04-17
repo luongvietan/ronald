@@ -2,6 +2,7 @@ import { client } from "@/lib/sanity/client";
 import { searchProvidersQuery } from "@/lib/sanity/queries";
 import ProviderCard from "@/components/ProviderCard";
 import SearchBar from "@/components/SearchBar";
+import SearchAnimations from "@/components/animations/SearchAnimations";
 import { Link } from "@/i18n/navigation";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -65,19 +66,22 @@ export default async function SearchPage({
   const hasFilters = q || location || category;
 
   return (
-    <div className="pt-24 pb-20">
+    <div className="pt-24 pb-20" data-page="search">
+      <SearchAnimations />
       <div className="bg-surface-container-low py-10">
         <div className="max-w-[1200px] mx-auto px-6">
-          <h1 className="text-3xl font-extrabold text-on-surface mb-6">
+          <h1 data-search-heading className="text-3xl font-extrabold text-on-surface mb-6">
             {q ? t("resultsFor", { q }) : t("title")}
           </h1>
-          <SearchBar compact />
+          <div data-search-bar>
+            <SearchBar compact />
+          </div>
         </div>
       </div>
 
       <div className="max-w-[1200px] mx-auto px-6 py-10">
         {hasFilters && (
-          <div className="flex flex-wrap items-center gap-3 mb-8">
+          <div data-search-chips className="flex flex-wrap items-center gap-3 mb-8">
             <span className="text-sm text-on-surface-variant font-medium">{t("activeFilters")}</span>
             {q && (
               <span className="inline-flex items-center gap-1.5 bg-primary-fixed text-on-primary-fixed px-3 py-1.5 rounded-full text-sm font-semibold">
@@ -103,7 +107,7 @@ export default async function SearchPage({
           </div>
         )}
 
-        <p className="text-on-surface-variant text-sm mb-8">
+        <p data-search-summary className="text-on-surface-variant text-sm mb-8">
           {providers.length > 0
             ? t("found", { count: providers.length })
             : hasFilters
@@ -112,7 +116,7 @@ export default async function SearchPage({
         </p>
 
         {providers.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div data-search-grid className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {providers.map((p) => (
               <ProviderCard
                 key={p._id}
@@ -128,7 +132,7 @@ export default async function SearchPage({
             ))}
           </div>
         ) : (
-          <div className="text-center py-24">
+          <div data-search-empty className="text-center py-24">
             <span className="material-symbols-outlined text-6xl text-outline mb-4 block">search_off</span>
             <h3 className="text-xl font-bold text-on-surface mb-2">{t("noResultsTitle")}</h3>
             <p className="text-on-surface-variant mb-6">{t("noResultsHint")}</p>

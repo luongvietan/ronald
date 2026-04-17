@@ -4,6 +4,7 @@ import SearchBar from "@/components/SearchBar";
 import CategoryCard from "@/components/CategoryCard";
 import ProviderCard from "@/components/ProviderCard";
 import NewsletterForm from "@/components/NewsletterForm";
+import HomeAnimations from "@/components/animations/HomeAnimations";
 import { client } from "@/lib/sanity/client";
 import { featuredProvidersQuery, categoriesQuery } from "@/lib/sanity/queries";
 import { Link } from "@/i18n/navigation";
@@ -81,9 +82,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const HOW_KEYS = ["1", "2", "3"] as const;
 
   return (
-    <div className="overflow-hidden">
-      <section className="relative min-h-[640px] md:min-h-[820px] w-full flex items-center justify-center">
-        <div className="absolute inset-0 z-0">
+    <div className="overflow-hidden" data-page="home">
+      <HomeAnimations />
+      <section
+        data-hero
+        className="relative min-h-[640px] md:min-h-[820px] w-full flex items-center justify-center"
+      >
+        <div data-hero-bg className="absolute inset-0 z-0">
           <Image
             src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1920&q=80"
             alt=""
@@ -95,20 +100,32 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </div>
 
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto pt-20 pb-16">
-          <span className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm text-white/90 border border-white/20 text-xs font-semibold px-4 py-2 rounded-full mb-6 tracking-wider uppercase">
+          <span
+            data-hero-badge
+            className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm text-white/90 border border-white/20 text-xs font-semibold px-4 py-2 rounded-full mb-6 tracking-wider uppercase"
+          >
             <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" />
             {t("heroBadge")}
           </span>
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white mb-5 tracking-tight leading-[1.1]">
+          <h1
+            data-hero-title
+            className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white mb-5 tracking-tight leading-[1.1]"
+          >
             {t("heroTitleLine1")}
-            <br className="hidden md:block" /> {t("heroTitleLine2")}
+            {" "}
+            {t("heroTitleLine2")}
           </h1>
-          <p className="text-base md:text-xl text-white/85 mb-10 font-medium max-w-2xl mx-auto leading-relaxed">
+          <p
+            data-hero-sub
+            className="text-base md:text-xl text-white/85 mb-10 font-medium max-w-2xl mx-auto leading-relaxed"
+          >
             {t("heroSubtitle")}
           </p>
-          <SearchBar />
+          <div data-hero-search>
+            <SearchBar />
+          </div>
 
-          <div className="flex flex-wrap justify-center gap-2 mt-8">
+          <div data-hero-pills className="flex flex-wrap justify-center gap-2 mt-8">
             {HERO_PILLS.map(({ slug, key }) => (
               <Link key={slug} href={`/categories/${slug}`} className="bg-white/15 backdrop-blur-sm text-white border border-white/20 text-xs font-semibold px-4 py-2 rounded-full hover:bg-white/25 transition-colors">
                 {t(`pills.${key}`)}
@@ -122,8 +139,17 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <div className="max-w-[1200px] mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-surface-container-high">
             {STATS.map((stat, i) => (
-              <div key={i} className="flex flex-col items-center justify-center py-6 px-4 text-center">
-                <p className="text-2xl md:text-3xl font-extrabold text-primary font-headline leading-none mb-1">{stat.value}</p>
+              <div
+                key={i}
+                data-stat-item
+                className="flex flex-col items-center justify-center py-6 px-4 text-center"
+              >
+                <p
+                  data-stat-value
+                  className="text-2xl md:text-3xl font-extrabold text-primary font-headline leading-none mb-1"
+                >
+                  {stat.value}
+                </p>
                 <p className="text-xs text-on-surface-variant font-medium tracking-wide">{stat.label}</p>
               </div>
             ))}
@@ -131,7 +157,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </div>
       </div>
 
-      <section className="max-w-[1200px] mx-auto px-6 py-20 md:py-28">
+      <section data-categories className="max-w-[1200px] mx-auto px-6 py-20 md:py-28">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
           <div>
             <span className="section-label">{t("categoriesSectionLabel")}</span>
@@ -139,7 +165,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           </div>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+        <div data-categories-grid className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
           {displayCategories.map((cat) => (
             <CategoryCard key={cat.slug} name={cat.name} slug={cat.slug} image={cat.image} fallbackImage={cat.fallbackImage} />
           ))}
@@ -163,16 +189,19 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </div>
       </section>
 
-      <section className="bg-surface-container-low py-20 md:py-24">
+      <section data-how className="bg-surface-container-low py-20 md:py-24">
         <div className="max-w-[1200px] mx-auto px-6">
           <div className="text-center mb-16">
             <span className="section-label">{t("howLabel")}</span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-on-surface">{t("howTitle")}</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-            <div className="hidden md:block absolute top-8 left-[calc(16.67%+1rem)] right-[calc(16.67%+1rem)] h-px bg-outline-variant" />
+            <div
+              data-how-line
+              className="hidden md:block absolute top-8 left-[calc(16.67%+1rem)] right-[calc(16.67%+1rem)] h-px bg-outline-variant"
+            />
             {HOW_KEYS.map((step, i) => (
-              <div key={step} className="text-center group relative">
+              <div key={step} data-how-step className="text-center group relative">
                 <div className="relative inline-block mb-5">
                   <div className="w-16 h-16 rounded-full bg-white shadow-md border border-outline-variant/40 mx-auto flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
                     <span className="material-symbols-outlined text-primary text-2xl group-hover:text-on-primary transition-colors duration-300">
@@ -191,9 +220,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </div>
       </section>
 
-      <section className="py-20 md:py-28">
+      <section data-featured className="py-20 md:py-28">
         <div className="max-w-[1200px] mx-auto px-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+          <div
+            data-featured-head
+            className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10"
+          >
             <div>
               <span className="section-label">{t("featuredLabel")}</span>
               <h2 className="text-3xl md:text-4xl font-extrabold text-on-surface">{t("featuredTitle")}</h2>
@@ -204,7 +236,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
+          <div data-featured-grid className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
             {showDemoProviders
               ? demoProviders.map((p) => (
                   <ProviderCard key={p.slug} name={p.name} slug={p.slug} shortDescription={p.shortDescription} location={p.location} rating={p.rating} fallbackImage={p.fallbackImage} />
@@ -217,9 +249,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       </section>
 
       <section className="max-w-[1200px] mx-auto px-6 pb-24">
-        <div className="relative overflow-hidden rounded-xl md:rounded-2xl bg-primary-container text-on-primary-container">
-          <div className="absolute -top-20 -right-20 w-72 h-72 bg-primary rounded-full blur-[80px] opacity-40 pointer-events-none" />
-          <div className="absolute -bottom-16 -left-16 w-56 h-56 bg-secondary-container rounded-full blur-[80px] opacity-30 pointer-events-none" />
+        <div
+          data-newsletter
+          className="relative overflow-hidden rounded-xl md:rounded-2xl bg-primary-container text-on-primary-container"
+        >
+          <div data-glow className="absolute -top-20 -right-20 w-72 h-72 bg-primary rounded-full blur-[80px] opacity-40 pointer-events-none" />
+          <div data-glow className="absolute -bottom-16 -left-16 w-56 h-56 bg-secondary-container rounded-full blur-[80px] opacity-30 pointer-events-none" />
 
           <div className="relative z-10 flex flex-col md:flex-row items-center gap-10 p-8 md:p-14">
             <div className="flex-1 text-center md:text-left">

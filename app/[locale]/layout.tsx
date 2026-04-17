@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Manrope, Be_Vietnam_Pro } from "next/font/google";
+import { Merriweather } from "next/font/google";
 import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
@@ -7,18 +7,21 @@ import { notFound } from "next/navigation";
 import "../globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SmoothScroll from "@/components/SmoothScroll";
 import { routing } from "@/i18n/routing";
 
-const manrope = Manrope({
+/**
+ * Typography:
+ *   - Titles  → Merriweather (serif, Google Fonts)
+ *   - Body    → Proxima Nova (commercial). Self-host the licensed .woff2 files
+ *               in /public/fonts/ — `@font-face` declarations live in globals.css.
+ *               Falls back to system sans-serif until files are added.
+ */
+const merriweather = Merriweather({
+  weight: ["300", "400", "700", "900"],
+  style: ["normal", "italic"],
   subsets: ["latin"],
-  variable: "--font-manrope",
-  display: "swap",
-});
-
-const beVietnamPro = Be_Vietnam_Pro({
-  weight: ["300", "400", "500", "600", "700"],
-  subsets: ["latin"],
-  variable: "--font-be-vietnam-pro",
+  variable: "--font-merriweather",
   display: "swap",
 });
 
@@ -105,7 +108,7 @@ export default async function LocaleLayout({
   return (
     <html
       lang={locale}
-      className={`${manrope.variable} ${beVietnamPro.variable} h-full antialiased`}
+      className={`${merriweather.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
@@ -117,6 +120,7 @@ export default async function LocaleLayout({
       </head>
       <body className="min-h-full flex flex-col bg-surface text-on-surface">
         <NextIntlClientProvider messages={messages}>
+          <SmoothScroll />
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />

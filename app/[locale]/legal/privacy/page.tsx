@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import LegalAnimations from "@/components/animations/LegalAnimations";
 
 export async function generateMetadata({
   params,
@@ -24,9 +25,10 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
   const t = await getTranslations({ locale, namespace: "legal" });
 
   return (
-    <div className="pt-20">
+    <div className="pt-20" data-page="legal">
+      <LegalAnimations />
       <div className="max-w-3xl mx-auto px-6 py-16">
-        <div className="mb-8">
+        <div data-legal-back className="mb-8">
           <Link href="/" className="text-primary text-sm hover:underline flex items-center gap-1">
             <span className="material-symbols-outlined text-base">arrow_back</span>
             {t("back")}
@@ -34,9 +36,9 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
         </div>
 
         <h1 className="text-4xl font-extrabold text-on-surface mb-2">{t("privacy.title")}</h1>
-        <p className="text-on-surface-variant mb-10">{t("updated")}</p>
+        <p data-legal-updated className="text-on-surface-variant mb-10">{t("updated")}</p>
 
-        <div className="space-y-8 text-on-surface leading-relaxed">
+        <div data-legal-body className="space-y-8 text-on-surface leading-relaxed">
           <section>
             <h2 className="text-xl font-bold mb-3">{t("privacy.s1h")}</h2>
             <p className="text-on-surface-variant">{t("privacy.s1p")}</p>

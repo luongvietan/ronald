@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import ContactPageForm from "./ContactPageForm";
+import ContactAnimations from "@/components/animations/ContactAnimations";
 
 export async function generateMetadata({
   params,
@@ -30,8 +31,9 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
   ];
 
   return (
-    <div className="pt-20">
-      <section className="bg-surface-container-low py-16 px-6">
+    <div className="pt-20" data-page="contact">
+      <ContactAnimations />
+      <section data-contact-hero className="bg-surface-container-low py-16 px-6">
         <div className="max-w-3xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold text-on-surface mb-4">{t("title")}</h1>
           <p className="text-on-surface-variant text-lg leading-relaxed">{t("subtitle")}</p>
@@ -44,7 +46,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
             <h2 className="text-2xl font-bold text-on-surface mb-6">{t("infoTitle")}</h2>
             <div className="flex flex-col gap-6">
               {contactInfo.map((item) => (
-                <div key={item.label} className="flex items-start gap-4">
+                <div key={item.label} data-contact-info-item className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center flex-shrink-0">
                     <span className="material-symbols-outlined text-primary">{item.icon}</span>
                   </div>
@@ -67,7 +69,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
               ))}
             </div>
 
-            <div className="mt-10 p-6 bg-primary-fixed rounded-[8px]">
+            <div data-contact-cta className="mt-10 p-6 bg-primary-fixed rounded-[8px]">
               <h3 className="font-bold text-on-primary-fixed mb-2">{t("ctaTitle")}</h3>
               <p className="text-on-primary-fixed/80 text-sm mb-4">{t("ctaBody")}</p>
               <a href="mailto:hello@ilehost.mu?subject=I want to list my service" className="btn btn-primary">
@@ -76,7 +78,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
             </div>
           </div>
 
-          <div className="lg:col-span-3">
+          <div data-contact-form-wrap className="lg:col-span-3">
             <h2 className="text-2xl font-bold text-on-surface mb-6">{t("formTitle")}</h2>
             <ContactPageForm />
           </div>
