@@ -8,21 +8,36 @@ export const category = defineType({
     defineField({
       name: "name",
       title: "Name",
-      type: "string",
-      validation: (Rule) => Rule.required(),
+      type: "object",
+      fields: [
+        { name: "en", title: "English", type: "string" },
+        { name: "fr", title: "French", type: "string" },
+      ],
+      validation: (Rule) =>
+        Rule.custom((val) => {
+          if (!val || typeof val !== "object") return "Name is required";
+          const o = val as { en?: string; fr?: string };
+          if (!o.en?.trim() && !o.fr?.trim()) {
+            return "Enter at least English or French";
+          }
+          return true;
+        }),
     }),
     defineField({
       name: "slug",
       title: "Slug",
       type: "slug",
-      options: { source: "name", maxLength: 96 },
+      options: { source: "name.en", maxLength: 96 },
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "description",
       title: "Description",
-      type: "text",
-      rows: 3,
+      type: "object",
+      fields: [
+        { name: "en", title: "English", type: "text", rows: 3 },
+        { name: "fr", title: "French", type: "text", rows: 3 },
+      ],
     }),
     defineField({
       name: "image",

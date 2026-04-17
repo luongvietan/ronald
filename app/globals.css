@@ -1,72 +1,128 @@
 @import "tailwindcss";
 
+/* ───────────────────────────────────────────────────────────────
+ * Mariage — Design System Tokens (DESIGN.md / SKILL.md)
+ * Brand: mariages.net inspired · Target WCAG 2.2 AA
+ * Do not reference raw hex in components — use semantic tokens.
+ * ─────────────────────────────────────────────────────────────── */
 @theme {
-  /* MD3 Color Palette */
-  --color-primary: #9f3e07;
-  --color-secondary: #795900;
-  --color-tertiary: #00648d;
-  --color-surface: #f8f9fa;
-  --color-background: #f8f9fa;
-  --color-on-surface: #191c1d;
-  --color-on-surface-variant: #57423a;
-  --color-surface-container: #edeeef;
-  --color-surface-container-low: #f3f4f5;
-  --color-surface-container-high: #e7e8e9;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-highest: #e1e3e4;
-  --color-primary-container: #c05621;
+  /* ── Semantic colors (DESIGN.md) ─────────────────────────── */
+  --color-text-primary: #222222;
+  --color-text-secondary: #6c6c6c;
+  --color-text-tertiary: #b52c3f;          /* brand wine red */
+  --color-surface-base: #ffffff;
+  --color-surface-muted: #fafafa;
+  --color-surface-inverse: #000000;
+  --color-border-strong: #d9d9d9;
+  --color-border-subtle: #ececec;
+
+  /* ── Brand (mapped onto MD3 names so existing utilities keep working) */
+  --color-primary: #b52c3f;                 /* brand wine red */
+  --color-primary-hover: #9e1f31;
+  --color-primary-active: #7e1523;
+  --color-primary-container: #f6dfe3;
   --color-on-primary: #ffffff;
-  --color-on-primary-container: #fffeff;
-  --color-primary-fixed: #ffdbcd;
-  --color-primary-fixed-dim: #ffb596;
-  --color-on-primary-fixed: #360f00;
-  --color-on-primary-fixed-variant: #7d2d00;
+  --color-on-primary-container: #4a0c15;
+  --color-primary-fixed: #f6dfe3;
+  --color-primary-fixed-dim: #e8b9c0;
+  --color-on-primary-fixed: #4a0c15;
+  --color-on-primary-fixed-variant: #7e1523;
+
+  --color-secondary: #795900;
   --color-secondary-container: #fcc340;
   --color-on-secondary: #ffffff;
   --color-on-secondary-container: #6f5100;
-  --color-secondary-fixed: #ffdea0;
-  --color-secondary-fixed-dim: #f6be3b;
-  --color-on-secondary-fixed: #261900;
-  --color-on-secondary-fixed-variant: #5c4300;
+
+  --color-tertiary: #00648d;
   --color-tertiary-container: #007eb1;
   --color-on-tertiary: #ffffff;
   --color-on-tertiary-container: #ffffff;
-  --color-tertiary-fixed: #c7e7ff;
-  --color-tertiary-fixed-dim: #85cfff;
-  --color-on-tertiary-fixed: #001e2e;
-  --color-on-tertiary-fixed-variant: #004c6c;
-  --color-surface-tint: #a14009;
-  --color-surface-variant: #e1e3e4;
-  --color-surface-dim: #d9dadb;
-  --color-surface-bright: #f8f9fa;
-  --color-on-background: #191c1d;
-  --color-outline: #8a7268;
-  --color-outline-variant: #dec0b5;
+
+  --color-surface: #ffffff;
+  --color-background: #ffffff;
+  --color-on-surface: #222222;             /* alias of text.primary */
+  --color-on-surface-variant: #6c6c6c;     /* alias of text.secondary */
+  --color-surface-container: #f5f5f5;
+  --color-surface-container-low: #fafafa;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-high: #ececec;
+  --color-surface-container-highest: #e3e3e3;
+  --color-surface-variant: #ececec;
+  --color-surface-dim: #e3e3e3;
+  --color-surface-bright: #ffffff;
+  --color-on-background: #222222;
+  --color-outline: #b5b5b5;
+  --color-outline-variant: #d9d9d9;        /* alias of border.strong */
+
   --color-error: #ba1a1a;
   --color-error-container: #ffdad6;
   --color-on-error: #ffffff;
   --color-on-error-container: #93000a;
-  --color-inverse-surface: #2e3132;
-  --color-inverse-on-surface: #f0f1f2;
-  --color-inverse-primary: #ffb596;
 
-  /* Border Radius */
-  --radius: 1rem;
-  --radius-lg: 2rem;
-  --radius-xl: 3rem;
+  --color-success: #1f7a3a;
+  --color-success-container: #d6f3df;
+  --color-on-success: #ffffff;
+  --color-on-success-container: #0b3f1c;
+
+  --color-inverse-surface: #2e2e2e;
+  --color-inverse-on-surface: #f0f1f2;
+  --color-inverse-primary: #f6dfe3;
+
+  /* ── Typography scale (DESIGN.md) ────────────────────────── */
+  --text-xs: 14px;
+  --text-sm: 14.4px;
+  --text-md: 16px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+  --text-4xl: 36px;                         /* extension for hero scale */
+  --text-5xl: 44px;                         /* extension for hero scale */
+
+  /* ── Spacing scale (DESIGN.md) ───────────────────────────── */
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 11.04px;
+  --spacing-4: 12px;
+  --spacing-5: 16px;
+  --spacing-6: 20px;
+  --spacing-7: 24px;
+
+  /* ── Radius tokens ───────────────────────────────────────── */
+  --radius-xs: 8px;                         /* cards, inputs */
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-pill: 36px;                      /* pill / CTA buttons */
   --radius-full: 9999px;
+
+  /* ── Motion tokens ───────────────────────────────────────── */
+  --motion-duration-instant: 150ms;
+  --motion-duration-short: 200ms;
+  --motion-duration-medium: 300ms;
+  --motion-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  /* ── Elevation ───────────────────────────────────────────── */
+  --shadow-sm: 0 1px 2px rgba(34, 34, 34, 0.06), 0 1px 1px rgba(34, 34, 34, 0.04);
+  --shadow-md: 0 4px 12px rgba(34, 34, 34, 0.08);
+  --shadow-lg: 0 12px 32px rgba(34, 34, 34, 0.12);
 }
 
-/* Font vars — applied after next/font injects CSS vars onto <html> */
+/* Fonts — applied after next/font injects CSS vars onto <html> */
 @theme inline {
   --font-headline: var(--font-manrope), sans-serif;
   --font-body: var(--font-be-vietnam-pro), sans-serif;
   --font-label: var(--font-be-vietnam-pro), sans-serif;
 }
 
-/* ─── Base ───────────────────────────────────────────────────── */
+/* ───────────────────────────────────────────────────────────────
+ * Base
+ * ─────────────────────────────────────────────────────────────── */
 html {
   scroll-behavior: smooth;
+  color-scheme: light;
 }
 
 *,
@@ -82,8 +138,9 @@ html {
 
 body {
   font-family: var(--font-body);
-  background-color: var(--color-surface);
-  color: var(--color-on-surface);
+  font-size: var(--text-md);
+  background-color: var(--color-surface-base);
+  color: var(--color-text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
@@ -92,34 +149,213 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-headline);
   line-height: 1.2;
+  color: var(--color-text-primary);
 }
 
 img {
   max-width: 100%;
 }
 
-/* ─── Focus ring ────────────────────────────────────────────── */
+/* ───────────────────────────────────────────────────────────────
+ * Focus ring — WCAG 2.2 AA (must never be hidden)
+ * ─────────────────────────────────────────────────────────────── */
+:focus {
+  outline: none;
+}
+
 :focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* ─── Icons ─────────────────────────────────────────────────── */
+/* Make focus-visible readable on dark hero surfaces */
+.on-dark :focus-visible,
+[data-on-dark="true"] :focus-visible {
+  outline-color: #ffffff;
+}
+
+/* ───────────────────────────────────────────────────────────────
+ * Motion — respect user preference
+ * ─────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ───────────────────────────────────────────────────────────────
+ * Material Symbols
+ * ─────────────────────────────────────────────────────────────── */
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
   vertical-align: middle;
   line-height: 1;
 }
 
-/* ─── Utilities ──────────────────────────────────────────────── */
+/* ───────────────────────────────────────────────────────────────
+ * Utility classes — semantic helpers
+ * ─────────────────────────────────────────────────────────────── */
 .section-label {
   font-family: var(--font-headline);
-  font-size: 0.7rem;
+  font-size: var(--text-xs);
   font-weight: 700;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--color-primary);
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--spacing-2);
+}
+
+/* ── Button primitives (all required states) ─────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  font-family: var(--font-headline);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  line-height: 1;
+  padding: 12px 24px;
+  border-radius: var(--radius-pill);
+  transition:
+    background-color var(--motion-duration-instant) var(--motion-ease-standard),
+    color var(--motion-duration-instant) var(--motion-ease-standard),
+    box-shadow var(--motion-duration-instant) var(--motion-ease-standard),
+    transform var(--motion-duration-instant) var(--motion-ease-standard);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn[data-loading="true"] {
+  cursor: progress;
+  pointer-events: none;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  box-shadow: var(--shadow-sm);
+}
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+  box-shadow: var(--shadow-md);
+}
+.btn-primary:active {
+  background-color: var(--color-primary-active);
+  transform: translateY(1px);
+}
+
+.btn-secondary {
+  background-color: var(--color-surface-container);
+  color: var(--color-text-primary);
+}
+.btn-secondary:hover {
+  background-color: var(--color-surface-container-high);
+}
+.btn-secondary:active {
+  background-color: var(--color-surface-container-highest);
+}
+
+.btn-ghost {
+  background-color: transparent;
+  color: var(--color-text-primary);
+}
+.btn-ghost:hover {
+  background-color: var(--color-surface-container);
+}
+.btn-ghost:active {
+  background-color: var(--color-surface-container-high);
+}
+
+.btn-on-dark {
+  background-color: #ffffff;
+  color: var(--color-primary);
+}
+.btn-on-dark:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+.btn-on-dark:active {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* ── Field primitive (input/select/textarea) ─────────────────── */
+.field {
+  width: 100%;
+  padding: 12px 16px;
+  background-color: var(--color-surface-container-lowest);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-xs);
+  font-size: var(--text-sm);
+  line-height: 1.4;
+  transition:
+    border-color var(--motion-duration-instant) var(--motion-ease-standard),
+    box-shadow var(--motion-duration-instant) var(--motion-ease-standard);
+}
+.field::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 1;
+}
+.field:hover {
+  border-color: var(--color-text-secondary);
+}
+.field:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(181, 44, 63, 0.15);
+}
+.field:disabled,
+.field[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background-color: var(--color-surface-container-low);
+}
+.field[aria-invalid="true"],
+.field.is-error {
+  border-color: var(--color-error);
+}
+.field[aria-invalid="true"]:focus,
+.field.is-error:focus {
+  box-shadow: 0 0 0 3px rgba(186, 26, 26, 0.18);
+}
+
+/* ── Card primitive ──────────────────────────────────────────── */
+.card {
+  background-color: var(--color-surface-container-lowest);
+  border-radius: var(--radius-xs);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+/* ── Simple spinner for button loading state ─────────────────── */
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spinner-rotate 0.7s linear infinite;
+}
+@keyframes spinner-rotate {
+  to { transform: rotate(360deg); }
 }

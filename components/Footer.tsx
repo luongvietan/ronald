@@ -1,165 +1,94 @@
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 
-const CATEGORIES = [
-  { label: "Photography", slug: "photography" },
-  { label: "Catering", slug: "catering" },
-  { label: "Flowers & Decoration", slug: "flowers-decoration" },
-  { label: "Music / DJ", slug: "music-dj" },
-  { label: "Venues", slug: "venues" },
-  { label: "Event Planner", slug: "event-planner" },
-  { label: "Decoration", slug: "decoration" },
+const CATEGORY_SLUGS = [
+  { slug: "photography", key: "photography" },
+  { slug: "catering", key: "catering" },
+  { slug: "flowers-decoration", key: "flowersDecoration" },
+  { slug: "music-dj", key: "musicDj" },
+  { slug: "venues", key: "venues" },
+  { slug: "event-planner", key: "eventPlanner" },
+  { slug: "decoration", key: "decoration" },
+] as const;
+
+const SOCIALS = [
+  { label: "Facebook", icon: "social_leaderboard", href: "#" },
+  { label: "Instagram", icon: "photo_camera", href: "#" },
+  { label: "Website", icon: "language", href: "#" },
 ];
 
-export default function Footer() {
+export default async function Footer() {
+  const t = await getTranslations("footer");
+  const year = new Date().getFullYear();
+
   return (
-    <footer className="w-full mt-20 rounded-t-[40px] bg-zinc-100 text-sm leading-relaxed">
+    <footer className="w-full mt-20 rounded-t-[40px] bg-surface-container-low text-text-secondary">
       <div className="max-w-[1200px] mx-auto px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-          {/* Brand */}
           <div className="md:col-span-1">
-            <div className="text-xl font-bold text-orange-900 mb-4 font-headline">
-              L&apos;Île Host
-            </div>
-            <p className="text-zinc-500 max-w-xs leading-relaxed text-sm">
-              The premium marketplace for world-class event services in the
-              heart of the Indian Ocean.
-            </p>
-            <div className="flex gap-4 mt-6">
-              <a
-                href="#"
-                aria-label="Facebook"
-                className="w-9 h-9 rounded-full bg-zinc-200 flex items-center justify-center text-zinc-500 hover:bg-primary hover:text-on-primary transition-colors"
-              >
-                <span className="material-symbols-outlined text-base">
-                  social_leaderboard
-                </span>
-              </a>
-              <a
-                href="#"
-                aria-label="Instagram"
-                className="w-9 h-9 rounded-full bg-zinc-200 flex items-center justify-center text-zinc-500 hover:bg-primary hover:text-on-primary transition-colors"
-              >
-                <span className="material-symbols-outlined text-base">
-                  photo_camera
-                </span>
-              </a>
-              <a
-                href="#"
-                aria-label="Website"
-                className="w-9 h-9 rounded-full bg-zinc-200 flex items-center justify-center text-zinc-500 hover:bg-primary hover:text-on-primary transition-colors"
-              >
-                <span className="material-symbols-outlined text-base">
-                  language
-                </span>
-              </a>
-            </div>
-          </div>
-
-          {/* Categories */}
-          <div>
-            <h4 className="font-bold text-orange-900 uppercase tracking-widest text-xs mb-5">
-              Categories
-            </h4>
-            <ul className="flex flex-col gap-3">
-              {CATEGORIES.map((cat) => (
-                <li key={cat.slug}>
-                  <Link
-                    href={`/categories/${cat.slug}`}
-                    className="text-zinc-500 hover:text-orange-700 hover:underline transition-all"
+            <div className="text-xl font-bold text-primary mb-4 font-headline">L&apos;Île Host</div>
+            <p className="text-text-secondary max-w-xs leading-relaxed text-sm">{t("tagline")}</p>
+            <ul className="flex gap-3 mt-6" aria-label="Social links">
+              {SOCIALS.map((s) => (
+                <li key={s.label}>
+                  <a
+                    href={s.href}
+                    aria-label={s.label}
+                    className="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-text-secondary hover:bg-primary hover:text-on-primary transition-colors duration-150"
                   >
-                    {cat.label}
-                  </Link>
+                    <span className="material-symbols-outlined text-base">{s.icon}</span>
+                  </a>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Platform */}
-          <div>
-            <h4 className="font-bold text-orange-900 uppercase tracking-widest text-xs mb-5">
-              Platform
-            </h4>
-            <ul className="flex flex-col gap-3">
-              <li>
-                <Link
-                  href="/about"
-                  className="text-zinc-500 hover:text-orange-700 hover:underline transition-all"
-                >
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/contact"
-                  className="text-zinc-500 hover:text-orange-700 hover:underline transition-all"
-                >
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/contact"
-                  className="text-zinc-500 hover:text-orange-700 hover:underline transition-all"
-                >
-                  List Your Service
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/search"
-                  className="text-zinc-500 hover:text-orange-700 hover:underline transition-all"
-                >
-                  Search Providers
-                </Link>
-              </li>
-            </ul>
-          </div>
+          <FooterColumn title={t("categoriesTitle")}>
+            {CATEGORY_SLUGS.map((cat) => (
+              <FooterLink key={cat.slug} href={`/categories/${cat.slug}`}>
+                {t(`categories.${cat.key}`)}
+              </FooterLink>
+            ))}
+          </FooterColumn>
 
-          {/* Legal */}
-          <div>
-            <h4 className="font-bold text-orange-900 uppercase tracking-widest text-xs mb-5">
-              Legal
-            </h4>
-            <ul className="flex flex-col gap-3">
-              <li>
-                <Link
-                  href="/legal/cgu"
-                  className="text-zinc-500 hover:text-orange-700 hover:underline transition-all"
-                >
-                  Terms of Use
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/legal/privacy"
-                  className="text-zinc-500 hover:text-orange-700 hover:underline transition-all"
-                >
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/legal/mentions"
-                  className="text-zinc-500 hover:text-orange-700 hover:underline transition-all"
-                >
-                  Legal Notices
-                </Link>
-              </li>
-            </ul>
-          </div>
+          <FooterColumn title={t("platformTitle")}>
+            <FooterLink href="/about">{t("aboutUs")}</FooterLink>
+            <FooterLink href="/contact">{t("contactLink")}</FooterLink>
+            <FooterLink href="/contact">{t("listYourService")}</FooterLink>
+            <FooterLink href="/search">{t("searchProviders")}</FooterLink>
+          </FooterColumn>
+
+          <FooterColumn title={t("legalTitle")}>
+            <FooterLink href="/legal/cgu">{t("terms")}</FooterLink>
+            <FooterLink href="/legal/privacy">{t("privacy")}</FooterLink>
+            <FooterLink href="/legal/mentions">{t("mentions")}</FooterLink>
+          </FooterColumn>
         </div>
 
-        {/* Bottom bar */}
-        <div className="pt-8 border-t border-zinc-200 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-zinc-400 text-xs">
-            © {new Date().getFullYear()} L&apos;Île Host. Inspired by Mauritian
-            Warmth.
-          </p>
-          <p className="text-zinc-400 text-xs">
-            Made with ❤️ for Mauritius
-          </p>
+        <div className="pt-8 border-t border-border-strong flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-text-secondary text-xs">{t("copyright", { year })}</p>
+          <p className="text-text-secondary text-xs">{t("madeIn")}</p>
         </div>
       </div>
     </footer>
+  );
+}
+
+function FooterColumn({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <h4 className="font-bold text-primary uppercase tracking-widest text-xs mb-5">{title}</h4>
+      <ul className="flex flex-col gap-3">{children}</ul>
+    </div>
+  );
+}
+
+function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <li>
+      <Link href={href} className="text-text-secondary hover:text-primary hover:underline transition-colors duration-150 text-sm">
+        {children}
+      </Link>
+    </li>
   );
 }

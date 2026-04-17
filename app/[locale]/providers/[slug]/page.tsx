@@ -1,14 +1,13 @@
 import { client } from "@/lib/sanity/client";
-import {
-  providerBySlugQuery,
-  allProviderSlugsQuery,
-} from "@/lib/sanity/queries";
+import { providerBySlugQuery, allProviderSlugsQuery } from "@/lib/sanity/queries";
 import { urlFor } from "@/lib/sanity/image";
 import ContactForm from "@/components/ContactForm";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import type { AppLocale } from "@/i18n/routing";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ilehost.mu";
 
@@ -40,17 +39,25 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, locale } = await params;
   try {
     const provider: Provider | null = await client.fetch(providerBySlugQuery, {
       slug,
+      locale: locale as AppLocale,
     });
     if (!provider) return {};
     return {
-      title: `${provider.name} | L'Île Host`,
+      title: provider.name,
       description: provider.shortDescription ?? provider.description,
+      alternates: {
+        canonical: `/${locale}/providers/${slug}`,
+        languages: {
+          en: `/en/providers/${slug}`,
+          fr: `/fr/providers/${slug}`,
+        },
+      },
     };
   } catch {
     return {};
@@ -60,22 +67,22 @@ export async function generateMetadata({
 export default async function ProviderPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }) {
-  const { slug } = await params;
+  const { slug, locale } = await params;
+  const loc = locale as AppLocale;
+  const t = await getTranslations({ locale, namespace: "providerPage" });
 
   let provider: Provider | null = null;
   try {
-    provider = await client.fetch(providerBySlugQuery, { slug });
+    provider = await client.fetch(providerBySlugQuery, { slug, locale: loc });
   } catch {
-    // Sanity not configured
+    /* Sanity not configured */
   }
 
   if (!provider) notFound();
 
   const images = provider.images ?? [];
-
-  // JSON-LD structured data for SEO
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
@@ -88,30 +95,23 @@ export default async function ProviderPage({
     },
     ...(provider.email && { email: provider.email }),
     ...(provider.whatsapp && { telephone: `+${provider.whatsapp}` }),
-    url: `${BASE_URL}/providers/${provider.slug}`,
+    url: `${BASE_URL}/${locale}/providers/${provider.slug}`,
   };
 
   return (
     <div className="pt-20">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      {/* Image Gallery */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
       <section className="w-full bg-surface-container-lowest">
         {images.length > 0 ? (
           <>
-            {/* Mobile: horizontal scroll strip */}
             <div className="md:hidden flex gap-2 overflow-x-auto px-4 py-3 snap-x snap-mandatory scrollbar-none">
               {images.slice(0, 6).map((img, i) => (
-                <div
-                  key={i}
-                  className="relative flex-none w-72 aspect-video rounded overflow-hidden snap-start"
-                >
+                <div key={i} className="relative flex-none w-72 aspect-video rounded overflow-hidden snap-start">
                   {img?.asset?._ref && (
                     <Image
                       src={urlFor(img).width(576).height(324).url()}
-                      alt={`${provider!.name} — photo ${i + 1}`}
+                      alt={t("photoAlt", { name: provider!.name, n: i + 1 })}
                       fill
                       className="object-cover"
                       priority={i === 0}
@@ -120,13 +120,12 @@ export default async function ProviderPage({
                 </div>
               ))}
             </div>
-            {/* Desktop: mosaic grid */}
             <div className="hidden md:grid grid-cols-4 h-[480px] gap-1">
               <div className="col-span-2 row-span-2 relative overflow-hidden">
                 {images[0]?.asset?._ref && (
                   <Image
                     src={urlFor(images[0]).width(900).height(900).url()}
-                    alt={provider.name}
+                    alt={t("galleryAlt", { name: provider.name })}
                     fill
                     className="object-cover hover:scale-105 transition-transform duration-700"
                     priority
@@ -138,7 +137,7 @@ export default async function ProviderPage({
                   {img?.asset?._ref && (
                     <Image
                       src={urlFor(img).width(450).height(450).url()}
-                      alt={`${provider!.name} — photo ${i + 2}`}
+                      alt={t("photoAlt", { name: provider!.name, n: i + 2 })}
                       fill
                       className="object-cover hover:scale-105 transition-transform duration-700"
                     />
@@ -149,107 +148,75 @@ export default async function ProviderPage({
           </>
         ) : (
           <div className="h-[280px] md:h-[380px] flex flex-col items-center justify-center bg-surface-container gap-3">
-            <span className="material-symbols-outlined text-6xl text-outline">
-              image
-            </span>
-            <p className="text-on-surface-variant text-sm">No photos yet</p>
+            <span className="material-symbols-outlined text-6xl text-outline">image</span>
+            <p className="text-on-surface-variant text-sm">{t("noPhotos")}</p>
           </div>
         )}
       </section>
 
-      {/* Content */}
       <div className="max-w-[1200px] mx-auto px-6 py-12">
-        {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-on-surface-variant text-sm mb-8">
           <Link href="/" className="hover:text-primary transition-colors">
-            Home
+            {t("breadcrumbHome")}
           </Link>
-          <span className="material-symbols-outlined text-sm">
-            chevron_right
-          </span>
+          <span className="material-symbols-outlined text-sm">chevron_right</span>
           {provider.category && (
             <>
-              <Link
-                href={`/categories/${provider.category.slug}`}
-                className="hover:text-primary transition-colors"
-              >
+              <Link href={`/categories/${provider.category.slug}`} className="hover:text-primary transition-colors">
                 {provider.category.name}
               </Link>
-              <span className="material-symbols-outlined text-sm">
-                chevron_right
-              </span>
+              <span className="material-symbols-outlined text-sm">chevron_right</span>
             </>
           )}
           <span className="text-on-surface font-medium">{provider.name}</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* Main Content */}
           <div className="lg:col-span-2">
-            {/* Header */}
             <div className="mb-8">
               {provider.category && (
                 <span className="inline-block bg-primary-fixed text-on-primary-fixed text-xs font-bold px-3 py-1 rounded-full mb-3">
                   {provider.category.name}
                 </span>
               )}
-              <h1 className="text-4xl font-extrabold text-on-surface mb-3">
-                {provider.name}
-              </h1>
+              <h1 className="text-4xl font-extrabold text-on-surface mb-3">{provider.name}</h1>
               <div className="flex flex-wrap items-center gap-4 text-on-surface-variant text-sm">
                 {provider.location && (
                   <div className="flex items-center gap-1">
-                    <span className="material-symbols-outlined text-sm">
-                      location_on
-                    </span>
+                    <span className="material-symbols-outlined text-sm">location_on</span>
                     {provider.location}
                   </div>
                 )}
                 {provider.rating !== undefined && (
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1" aria-label={t("ratingAria", { rating: provider.rating.toFixed(1) })}>
                     <span
-                      className="material-symbols-outlined text-secondary text-sm"
+                      aria-hidden="true"
+                      className="material-symbols-outlined text-primary text-sm"
                       style={{ fontVariationSettings: "'FILL' 1" }}
                     >
                       star
                     </span>
-                    <span className="font-bold text-on-surface">
-                      {provider.rating.toFixed(1)}
-                    </span>
+                    <span className="font-bold text-text-primary">{provider.rating.toFixed(1)}</span>
                   </div>
                 )}
-                {provider.priceRange && (
-                  <span className="font-bold text-secondary">
-                    {provider.priceRange}
-                  </span>
-                )}
+                {provider.priceRange && <span className="font-bold text-text-primary">{provider.priceRange}</span>}
               </div>
             </div>
 
-            {/* Description */}
             {provider.description && (
               <div className="mb-10">
-                <h2 className="text-xl font-bold text-on-surface mb-4">
-                  About
-                </h2>
-                <p className="text-on-surface-variant leading-relaxed whitespace-pre-line">
-                  {provider.description}
-                </p>
+                <h2 className="text-xl font-bold text-on-surface mb-4">{t("about")}</h2>
+                <p className="text-on-surface-variant leading-relaxed whitespace-pre-line">{provider.description}</p>
               </div>
             )}
 
-            {/* Services */}
             {provider.services && provider.services.length > 0 && (
               <div>
-                <h2 className="text-xl font-bold text-on-surface mb-4">
-                  Services
-                </h2>
+                <h2 className="text-xl font-bold text-on-surface mb-4">{t("services")}</h2>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {provider.services.map((service, i) => (
                     <li key={i} className="flex items-start gap-3">
-                      <span className="material-symbols-outlined text-primary text-xl mt-0.5">
-                        check_circle
-                      </span>
+                      <span className="material-symbols-outlined text-primary text-xl mt-0.5">check_circle</span>
                       <span className="text-on-surface">{service}</span>
                     </li>
                   ))}
@@ -258,46 +225,43 @@ export default async function ProviderPage({
             )}
           </div>
 
-          {/* Sidebar — Contact */}
           <aside className="lg:col-span-1">
             <div className="bg-surface-container-lowest rounded-[1.5rem] p-7 shadow-md sticky top-24 border border-outline-variant/40">
-              <p className="text-xs font-bold text-primary uppercase tracking-widest mb-1">
-                Get in touch
-              </p>
-              <h2 className="text-xl font-extrabold text-on-surface mb-5 font-headline">
-                Contact {provider.name}
-              </h2>
+              <p className="text-xs font-bold text-primary uppercase tracking-widest mb-1">{t("getInTouch")}</p>
+              <h2 className="text-xl font-extrabold text-on-surface mb-5 font-headline">{t("contactName", { name: provider.name })}</h2>
 
               <div className="flex flex-col gap-3 mb-6">
-                {/* WhatsApp CTA */}
                 {provider.whatsapp && (
                   <a
                     href={`https://wa.me/${provider.whatsapp}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2.5 w-full py-3.5 rounded-full bg-[#25D366] text-white font-bold text-sm hover:brightness-110 hover:scale-[1.02] transition-all shadow-md"
+                    aria-label={t("whatsappAria", { name: provider.name })}
+                    className="btn w-full bg-[#25D366] text-white hover:bg-[#1fb85a] active:bg-[#199a4b] shadow-[0_1px_2px_rgba(34,34,34,0.06)]"
                   >
-                    <span className="material-symbols-outlined text-[20px]">chat</span>
-                    Chat on WhatsApp
+                    <span aria-hidden="true" className="material-symbols-outlined text-[20px]">
+                      chat
+                    </span>
+                    {t("whatsapp")}
                   </a>
                 )}
 
-                {/* Email CTA */}
                 {provider.email && (
                   <a
                     href={`mailto:${provider.email}`}
-                    className="flex items-center justify-center gap-2.5 w-full py-3.5 rounded-full border border-outline-variant text-on-surface font-bold text-sm hover:bg-surface-container-low transition-colors"
+                    aria-label={t("emailAria", { name: provider.name })}
+                    className="btn btn-secondary w-full border border-border-strong"
                   >
-                    <span className="material-symbols-outlined text-[20px]">mail</span>
-                    Send Email
+                    <span aria-hidden="true" className="material-symbols-outlined text-[20px]">
+                      mail
+                    </span>
+                    {t("email")}
                   </a>
                 )}
               </div>
 
               <div className="border-t border-outline-variant pt-6">
-                <h3 className="font-bold text-on-surface text-sm mb-4">
-                  Or send a message
-                </h3>
+                <h3 className="font-bold text-on-surface text-sm mb-4">{t("orMessage")}</h3>
                 <ContactForm providerName={provider.name} />
               </div>
             </div>

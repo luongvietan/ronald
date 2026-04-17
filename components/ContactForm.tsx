@@ -1,72 +1,182 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
+type Errors = Partial<Record<"name" | "email" | "message", string>>;
+
 export default function ContactForm({ providerName }: { providerName: string }) {
+  const t = useTranslations("contactForm");
   const [form, setForm] = useState({ name: "", email: "", message: "" });
-  const [submitted, setSubmitted] = useState(false);
+  const [errors, setErrors] = useState<Errors>({});
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
-  function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  function validate(formData: { name: string; email: string; message: string }): Errors {
+    const next: Errors = {};
+    if (!formData.name.trim()) next.name = t("errName");
+    if (!formData.email.trim()) {
+      next.email = t("errEmail");
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      next.email = t("errEmailInvalid");
+    }
+    if (!formData.message.trim() || formData.message.trim().length < 10) {
+      next.message = t("errMessage");
+    }
+    return next;
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+    if (errors[name as keyof Errors]) {
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // For MVP: just show success state (no backend)
-    setSubmitted(true);
+    const nextErrors = validate(form);
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors(nextErrors);
+      setStatus("error");
+      return;
+    }
+    setErrors({});
+    setStatus("loading");
+    try {
+      await new Promise((r) => setTimeout(r, 600));
+      setStatus("success");
+    } catch {
+      setStatus("error");
+    }
   }
 
-  if (submitted) {
+  if (status === "success") {
     return (
-      <div className="bg-surface-container-low rounded p-6 text-center">
-        <span className="material-symbols-outlined text-4xl text-primary mb-3 block">
+      <div role="status" aria-live="polite" className="bg-success-container text-on-success-container rounded-[8px] p-6 text-center">
+        <span aria-hidden="true" className="material-symbols-outlined text-4xl mb-3 block">
           check_circle
         </span>
-        <p className="font-bold text-on-surface">Message sent!</p>
-        <p className="text-on-surface-variant text-sm mt-1">
-          {providerName} will get back to you shortly.
-        </p>
+        <p className="font-bold">{t("successTitle")}</p>
+        <p className="text-sm mt-1 opacity-90">{t("successBody", { name: providerName })}</p>
       </div>
     );
   }
 
+  const loading = status === "loading";
+
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <input
-        type="text"
+    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
+      <Field
+        id="cf-name"
         name="name"
-        placeholder="Your name"
+        label={t("name")}
+        type="text"
         value={form.name}
         onChange={handleChange}
+        error={errors.name}
+        disabled={loading}
         required
-        className="px-4 py-3 rounded bg-surface-container-low border border-outline-variant focus:outline-none focus:border-primary text-on-surface placeholder:text-on-surface-variant text-sm"
+        autoComplete="name"
       />
-      <input
-        type="email"
+      <Field
+        id="cf-email"
         name="email"
-        placeholder="Your email"
+        label={t("email")}
+        type="email"
         value={form.email}
         onChange={handleChange}
+        error={errors.email}
+        disabled={loading}
         required
-        className="px-4 py-3 rounded bg-surface-container-low border border-outline-variant focus:outline-none focus:border-primary text-on-surface placeholder:text-on-surface-variant text-sm"
+        autoComplete="email"
       />
-      <textarea
-        name="message"
-        placeholder="Your message"
-        value={form.message}
-        onChange={handleChange}
-        required
-        rows={4}
-        className="px-4 py-3 rounded bg-surface-container-low border border-outline-variant focus:outline-none focus:border-primary text-on-surface placeholder:text-on-surface-variant text-sm resize-none"
-      />
-      <button
-        type="submit"
-        className="w-full py-3 rounded-full bg-primary text-on-primary font-bold hover:scale-105 transition-all"
-      >
-        Send Message
+      <div className="flex flex-col gap-1">
+        <label htmlFor="cf-message" className="sr-only">
+          {t("message")}
+        </label>
+        <textarea
+          id="cf-message"
+          name="message"
+          placeholder={t("message")}
+          value={form.message}
+          onChange={handleChange}
+          required
+          rows={4}
+          disabled={loading}
+          aria-invalid={Boolean(errors.message)}
+          aria-describedby={errors.message ? "cf-message-error" : undefined}
+          className="field resize-none"
+        />
+        {errors.message && (
+          <p id="cf-message-error" role="alert" className="text-xs text-error mt-1">
+            {errors.message}
+          </p>
+        )}
+      </div>
+      <button type="submit" className="btn btn-primary w-full" disabled={loading} data-loading={loading ? "true" : "false"} aria-busy={loading}>
+        {loading ? (
+          <>
+            <span className="spinner" aria-hidden="true" />
+            {t("sending")}
+          </>
+        ) : (
+          t("send")
+        )}
       </button>
     </form>
+  );
+}
+
+interface FieldProps {
+  id: string;
+  name: string;
+  label: string;
+  type: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
+  disabled?: boolean;
+  required?: boolean;
+  autoComplete?: string;
+}
+
+function Field({
+  id,
+  name,
+  label,
+  type,
+  value,
+  onChange,
+  error,
+  disabled,
+  required,
+  autoComplete,
+}: FieldProps) {
+  return (
+    <div className="flex flex-col gap-1">
+      <label htmlFor={id} className="sr-only">
+        {label}
+      </label>
+      <input
+        id={id}
+        name={name}
+        type={type}
+        placeholder={label}
+        value={value}
+        onChange={onChange}
+        required={required}
+        disabled={disabled}
+        autoComplete={autoComplete}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? `${id}-error` : undefined}
+        className="field"
+      />
+      {error && (
+        <p id={`${id}-error`} role="alert" className="text-xs text-error mt-1">
+          {error}
+        </p>
+      )}
+    </div>
   );
 }

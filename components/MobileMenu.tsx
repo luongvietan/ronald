@@ -1,105 +1,139 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import { Link, usePathname } from "@/i18n/navigation";
+import LocaleSwitcher from "./LocaleSwitcher";
 
-const NAV_LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/categories/photography", label: "Explore" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-];
-
-const CATEGORIES = [
-  { label: "Photography", slug: "photography" },
-  { label: "Catering", slug: "catering" },
-  { label: "Flowers & Decoration", slug: "flowers-decoration" },
-  { label: "Music / DJ", slug: "music-dj" },
-  { label: "Venues", slug: "venues" },
-  { label: "Event Planner", slug: "event-planner" },
-  { label: "Decoration", slug: "decoration" },
-];
+const CATEGORY_SLUGS = [
+  { slug: "photography", key: "photography" },
+  { slug: "catering", key: "catering" },
+  { slug: "flowers-decoration", key: "flowersDecoration" },
+  { slug: "music-dj", key: "musicDj" },
+  { slug: "venues", key: "venues" },
+  { slug: "event-planner", key: "eventPlanner" },
+  { slug: "decoration", key: "decoration" },
+] as const;
 
 export default function MobileMenu({ transparent = false }: { transparent?: boolean }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const t = useTranslations("nav");
+  const tFooter = useTranslations("footer.categories");
+  const tMobile = useTranslations("mobileMenu");
+
+  const NAV_LINKS = [
+    { href: "/", label: tMobile("home") },
+    { href: "/categories/photography", label: t("explore") },
+    { href: "/about", label: t("about") },
+    { href: "/contact", label: t("contact") },
+  ];
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   return (
     <>
-      {/* Hamburger Button */}
       <button
-        className={`md:hidden flex items-center justify-center w-10 h-10 transition-colors ${transparent ? "text-white" : "text-orange-900"}`}
+        type="button"
+        className={`md:hidden flex items-center justify-center w-10 h-10 rounded-full transition-colors duration-150 ${
+          transparent ? "text-white hover:bg-white/15" : "text-primary hover:bg-surface-container"
+        }`}
         onClick={() => setOpen(!open)}
-        aria-label="Toggle menu"
+        aria-label={open ? tMobile("close") : tMobile("open")}
+        aria-expanded={open}
+        aria-controls="mobile-menu-panel"
       >
         <span className="material-symbols-outlined text-2xl">
           {open ? "close" : "menu"}
         </span>
       </button>
 
-      {/* Overlay */}
       {open && (
         <div
-          className="fixed inset-0 bg-black/40 z-40"
+          className="fixed inset-0 bg-black/40 z-40 md:hidden"
           onClick={() => setOpen(false)}
+          aria-hidden="true"
         />
       )}
 
-      {/* Slide-out Panel */}
       <div
-        className={`fixed top-0 right-0 h-full w-72 bg-white z-50 shadow-2xl transform transition-transform duration-300 ${
+        id="mobile-menu-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-label={tMobile("navAria")}
+        className={`fixed top-0 right-0 h-full w-72 max-w-[85vw] bg-surface-container-lowest z-50 shadow-[0_12px_32px_rgba(34,34,34,0.12)] transform transition-transform duration-200 md:hidden ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="flex items-center justify-between p-6 border-b border-outline-variant">
-          <span className="text-xl font-extrabold text-orange-900 font-headline">
-            L&apos;Île Host
-          </span>
-          <button onClick={() => setOpen(false)} className="text-on-surface-variant">
-            <span className="material-symbols-outlined">close</span>
-          </button>
+        <div className="flex items-center justify-between p-6 border-b border-border-strong">
+          <span className="text-xl font-extrabold text-primary font-headline">L&apos;Île Host</span>
+          <div className="flex items-center gap-2">
+            <div className="text-primary">
+              <LocaleSwitcher />
+            </div>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label={tMobile("close")}
+              className="w-9 h-9 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface-container transition-colors duration-150"
+            >
+              <span className="material-symbols-outlined">close</span>
+            </button>
+          </div>
         </div>
 
-        <nav className="p-6 flex flex-col gap-1">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setOpen(false)}
-              className={`px-4 py-3 rounded font-semibold transition-colors ${
-                pathname === link.href
-                  ? "bg-primary-fixed text-on-primary-fixed"
-                  : "text-on-surface hover:bg-surface-container-low"
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
+        <nav className="p-6 flex flex-col gap-1 overflow-y-auto max-h-[calc(100vh-96px)]">
+          {NAV_LINKS.map((link) => {
+            const active = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                aria-current={active ? "page" : undefined}
+                onClick={() => setOpen(false)}
+                className={`px-4 py-3 rounded-[8px] font-semibold transition-colors duration-150 ${
+                  active
+                    ? "bg-primary-fixed text-on-primary-fixed"
+                    : "text-text-primary hover:bg-surface-container-low"
+                }`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
 
-          <div className="mt-4 pt-4 border-t border-outline-variant">
-            <p className="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-3 px-4">
-              Categories
+          <div className="mt-4 pt-4 border-t border-border-strong">
+            <p className="text-xs font-bold text-text-secondary uppercase tracking-widest mb-3 px-4">
+              {tMobile("categories")}
             </p>
-            {CATEGORIES.map((cat) => (
+            {CATEGORY_SLUGS.map((cat) => (
               <Link
                 key={cat.slug}
                 href={`/categories/${cat.slug}`}
                 onClick={() => setOpen(false)}
-                className="px-4 py-2 rounded text-sm text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface flex items-center gap-2 transition-colors"
+                className="px-4 py-2 rounded-[8px] text-sm text-text-secondary hover:bg-surface-container-low hover:text-text-primary flex items-center gap-2 transition-colors duration-150"
               >
-                <span className="material-symbols-outlined text-primary text-base">
-                  chevron_right
-                </span>
-                {cat.label}
+                <span className="material-symbols-outlined text-primary text-base">chevron_right</span>
+                {tFooter(cat.key)}
               </Link>
             ))}
           </div>
 
           <div className="mt-6">
-            <button className="w-full bg-primary text-on-primary py-3 rounded-full font-bold text-sm hover:scale-105 transition-all">
-              List your service
-            </button>
+            <Link href="/contact" onClick={() => setOpen(false)} className="btn btn-primary w-full">
+              {t("listService")}
+            </Link>
           </div>
         </nav>
       </div>

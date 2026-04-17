@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter, usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useRouter, usePathname } from "@/i18n/navigation";
 
 const LOCATIONS = [
   "Grand Baie",
@@ -18,12 +19,10 @@ interface CategoryFiltersProps {
   currentQ: string;
 }
 
-export default function CategoryFilters({
-  currentLocation,
-  currentQ,
-}: CategoryFiltersProps) {
+export default function CategoryFilters({ currentLocation, currentQ }: CategoryFiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const t = useTranslations("categoryPage");
 
   function applyFilter(location: string) {
     const params = new URLSearchParams();
@@ -37,22 +36,25 @@ export default function CategoryFilters({
     router.push(pathname);
   }
 
-  const hasFilters = currentLocation || currentQ;
+  const hasFilters = Boolean(currentLocation || currentQ);
 
   return (
-    <div className="sticky top-[72px] z-40 mb-12 py-4 bg-surface/80 backdrop-blur-md">
+    <div className="sticky top-[72px] z-40 mb-12 py-4 bg-surface/85 backdrop-blur-md" role="region" aria-label={t("filtersAria")}>
       <div className="flex flex-wrap items-center gap-3">
-        {/* Location filter */}
-        <div className="flex items-center gap-2 px-5 py-2.5 bg-surface-container-lowest rounded-full shadow-sm">
-          <span className="material-symbols-outlined text-primary text-lg">
+        <div className="flex items-center gap-2 px-5 py-2.5 bg-surface-container-lowest rounded-[36px] border border-border-strong shadow-[0_1px_2px_rgba(34,34,34,0.06)] hover:border-text-secondary focus-within:border-primary transition-colors duration-150">
+          <span aria-hidden="true" className="material-symbols-outlined text-primary text-lg">
             location_on
           </span>
+          <label htmlFor="filter-location" className="sr-only">
+            {t("filterLocation")}
+          </label>
           <select
+            id="filter-location"
             value={currentLocation}
             onChange={(e) => applyFilter(e.target.value)}
-            className="bg-transparent border-none focus:ring-0 text-on-surface-variant font-semibold tracking-wider uppercase text-[11px] cursor-pointer outline-none"
+            className="bg-transparent border-none text-text-primary font-semibold tracking-wider uppercase text-[11px] cursor-pointer outline-none"
           >
-            <option value="">All Locations</option>
+            <option value="">{t("allLocations")}</option>
             {LOCATIONS.map((l) => (
               <option key={l} value={l}>
                 {l}
@@ -61,42 +63,51 @@ export default function CategoryFilters({
           </select>
         </div>
 
-        {/* Price (placeholder for Phase 2) */}
-        <div className="flex items-center gap-2 px-5 py-2.5 bg-surface-container-lowest rounded-full shadow-sm cursor-not-allowed opacity-60">
-          <span className="font-semibold text-on-surface-variant tracking-wider uppercase text-[11px]">
-            Price
-          </span>
-          <span className="material-symbols-outlined text-primary text-lg">
+        <button
+          type="button"
+          disabled
+          aria-disabled="true"
+          title={t("comingSoon")}
+          className="flex items-center gap-2 px-5 py-2.5 bg-surface-container-lowest rounded-[36px] border border-border-strong shadow-[0_1px_2px_rgba(34,34,34,0.06)] opacity-55 cursor-not-allowed"
+        >
+          <span className="font-semibold text-text-secondary tracking-wider uppercase text-[11px]">{t("price")}</span>
+          <span aria-hidden="true" className="material-symbols-outlined text-primary text-lg">
             expand_more
           </span>
-        </div>
+        </button>
 
-        {/* Style (placeholder for Phase 2) */}
-        <div className="flex items-center gap-2 px-5 py-2.5 bg-surface-container-lowest rounded-full shadow-sm cursor-not-allowed opacity-60">
-          <span className="font-semibold text-on-surface-variant tracking-wider uppercase text-[11px]">
-            Style
-          </span>
-          <span className="material-symbols-outlined text-primary text-lg">
+        <button
+          type="button"
+          disabled
+          aria-disabled="true"
+          title={t("comingSoon")}
+          className="flex items-center gap-2 px-5 py-2.5 bg-surface-container-lowest rounded-[36px] border border-border-strong shadow-[0_1px_2px_rgba(34,34,34,0.06)] opacity-55 cursor-not-allowed"
+        >
+          <span className="font-semibold text-text-secondary tracking-wider uppercase text-[11px]">{t("style")}</span>
+          <span aria-hidden="true" className="material-symbols-outlined text-primary text-lg">
             filter_list
           </span>
-        </div>
+        </button>
 
-        {/* Active filter chips */}
         {currentQ && (
-          <span className="inline-flex items-center gap-1.5 bg-primary-fixed text-on-primary-fixed px-3 py-1.5 rounded-full text-xs font-semibold">
-            <span className="material-symbols-outlined text-sm">search</span>
+          <span className="inline-flex items-center gap-1.5 bg-primary-fixed text-on-primary-fixed px-3 py-1.5 rounded-[36px] text-xs font-semibold">
+            <span aria-hidden="true" className="material-symbols-outlined text-sm">
+              search
+            </span>
             {currentQ}
           </span>
         )}
 
-        {/* Reset */}
         {hasFilters && (
           <button
+            type="button"
             onClick={clearAll}
-            className="ml-auto flex items-center gap-1 text-primary font-medium text-sm hover:underline"
+            className="ml-auto inline-flex items-center gap-1 text-primary font-semibold text-sm hover:underline transition-colors duration-150 rounded px-1"
           >
-            <span className="material-symbols-outlined text-base">close</span>
-            Reset all
+            <span aria-hidden="true" className="material-symbols-outlined text-base">
+              close
+            </span>
+            {t("resetAll")}
           </button>
         )}
       </div>

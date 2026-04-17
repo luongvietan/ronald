@@ -1,20 +1,16 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link, usePathname } from "@/i18n/navigation";
 import { useEffect, useState } from "react";
 import MobileMenu from "./MobileMenu";
-
-const NAV_LINKS = [
-  { href: "/categories/photography", label: "Explore" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-];
+import LocaleSwitcher from "./LocaleSwitcher";
 
 export default function Navbar() {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
+  const t = useTranslations("nav");
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 60);
@@ -25,41 +21,49 @@ export default function Navbar() {
 
   const transparent = isHome && !scrolled;
 
+  const NAV_LINKS = [
+    { href: "/categories/photography", label: t("explore") },
+    { href: "/about", label: t("about") },
+    { href: "/contact", label: t("contact") },
+  ];
+
   return (
     <nav
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+      aria-label="Primary"
+      data-on-dark={transparent ? "true" : "false"}
+      className={`fixed top-0 w-full z-50 transition-colors duration-150 ${
         transparent
           ? "bg-transparent"
-          : "bg-white/85 backdrop-blur-xl shadow-sm"
+          : "bg-white/90 backdrop-blur-xl shadow-[0_1px_2px_rgba(34,34,34,0.06)] border-b border-border-subtle"
       }`}
     >
       <div className="flex justify-between items-center px-6 py-4 max-w-[1200px] mx-auto w-full">
-        {/* Logo */}
         <Link
           href="/"
-          className={`text-2xl font-extrabold tracking-tighter font-headline transition-colors duration-300 ${
-            transparent ? "text-white" : "text-orange-900"
+          aria-label={t("homeAria")}
+          className={`text-2xl font-extrabold tracking-tighter font-headline transition-colors duration-150 rounded ${
+            transparent ? "text-white" : "text-primary"
           }`}
         >
           L&apos;Île Host
         </Link>
 
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-6">
           {NAV_LINKS.map((link) => {
-            const active = pathname?.startsWith(link.href);
+            const active = pathname?.startsWith(link.href) ?? false;
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`font-headline font-bold text-sm tracking-wide transition-all duration-200 hover:scale-105 pb-0.5 ${
+                aria-current={active ? "page" : undefined}
+                className={`font-headline font-bold text-sm tracking-wide pb-0.5 transition-colors duration-150 ${
                   transparent
                     ? active
                       ? "text-white border-b-2 border-white"
                       : "text-white/80 hover:text-white"
                     : active
-                      ? "text-orange-900 border-b-2 border-orange-800"
-                      : "text-zinc-600 hover:text-orange-800"
+                      ? "text-primary border-b-2 border-primary"
+                      : "text-text-secondary hover:text-primary"
                 }`}
               >
                 {link.label}
@@ -68,27 +72,24 @@ export default function Navbar() {
           })}
         </div>
 
-        {/* Desktop CTA */}
         <div className="hidden md:flex items-center gap-3">
+          <div className={transparent ? "text-white" : "text-primary"}>
+            <LocaleSwitcher />
+          </div>
+          <Link href="/contact" className={`btn ${transparent ? "btn-on-dark" : "btn-primary"}`}>
+            {t("listService")}
+          </Link>
           <button
-            className={`px-6 py-2 rounded-full font-semibold text-sm transition-all hover:scale-105 active:scale-95 ${
-              transparent
-                ? "bg-white text-primary hover:bg-white/90"
-                : "bg-primary text-on-primary hover:bg-primary/90"
+            type="button"
+            aria-label={t("account")}
+            className={`flex items-center justify-center w-10 h-10 rounded-full transition-colors duration-150 ${
+              transparent ? "text-white hover:bg-white/15" : "text-primary hover:bg-surface-container"
             }`}
           >
-            List your service
+            <span className="material-symbols-outlined text-[28px]">account_circle</span>
           </button>
-          <span
-            className={`material-symbols-outlined cursor-pointer text-3xl transition-colors ${
-              transparent ? "text-white" : "text-orange-900"
-            }`}
-          >
-            account_circle
-          </span>
         </div>
 
-        {/* Mobile hamburger */}
         <MobileMenu transparent={transparent} />
       </div>
     </nav>
