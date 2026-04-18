@@ -34,15 +34,20 @@ export const categoriesQuery = groq`
   }
 `;
 
+/** Tìm chuỗi con, không phân biệt hoa thường (prefix-only `match ($q + "*")` bỏ sót ví dụ "Lens" trong "Lagoon Lens"). */
+const qMatch = (field: string) => /* groq */ `
+  lower(${field}) match ("*" + lower($q) + "*")
+`;
+
 export const providersByCategoryQuery = groq`
   *[_type == "provider"
     && category->slug.current == $slug
-    && ($location == "" || location match ("*" + $location + "*"))
+    && ($location == "" || lower(location) match ("*" + lower($location) + "*"))
     && ($q == "" ||
-      coalesce(name.en, name) match ($q + "*") ||
-      coalesce(name.fr, name.en, name) match ($q + "*") ||
-      coalesce(shortDescription.en, shortDescription) match ($q + "*") ||
-      coalesce(shortDescription.fr, shortDescription.en, shortDescription) match ($q + "*")
+      ${qMatch(`coalesce(name.en, name)`)}
+      || ${qMatch(`coalesce(name.fr, name.en, name)`)}
+      || ${qMatch(`coalesce(shortDescription.en, shortDescription)`)}
+      || ${qMatch(`coalesce(shortDescription.fr, shortDescription.en, shortDescription)`)}
     )
   ] | order(featured desc, rating desc, ${sortName} asc) {
     _id,
@@ -61,13 +66,13 @@ export const providersByCategoryQuery = groq`
 export const searchProvidersQuery = groq`
   *[_type == "provider"
     && ($q == "" ||
-      coalesce(name.en, name) match ($q + "*") ||
-      coalesce(name.fr, name.en, name) match ($q + "*") ||
-      coalesce(shortDescription.en, shortDescription) match ($q + "*") ||
-      coalesce(shortDescription.fr, shortDescription.en, shortDescription) match ($q + "*") ||
-      location match ($q + "*")
+      ${qMatch(`coalesce(name.en, name)`)}
+      || ${qMatch(`coalesce(name.fr, name.en, name)`)}
+      || ${qMatch(`coalesce(shortDescription.en, shortDescription)`)}
+      || ${qMatch(`coalesce(shortDescription.fr, shortDescription.en, shortDescription)`)}
+      || lower(location) match ("*" + lower($q) + "*")
     )
-    && ($location == "" || location match ("*" + $location + "*"))
+    && ($location == "" || lower(location) match ("*" + lower($location) + "*"))
     && ($category == "" || category->slug.current == $category)
   ] | order(featured desc, rating desc, ${sortName} asc) {
     _id,

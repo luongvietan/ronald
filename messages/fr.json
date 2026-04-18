@@ -112,6 +112,8 @@
     "noProvidersEnd": "pour référencer votre service.",
     "backHome": "Retour à l'accueil",
     "filterLocation": "Lieu",
+    "filterKeyword": "Mot-clé",
+    "filterKeywordPlaceholder": "Nom ou description…",
     "allLocations": "Tous les lieux",
     "price": "Prix",
     "style": "Style",

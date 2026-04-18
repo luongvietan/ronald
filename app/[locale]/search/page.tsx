@@ -74,7 +74,7 @@ export default async function SearchPage({
             {q ? t("resultsFor", { q }) : t("title")}
           </h1>
           <div data-search-bar>
-            <SearchBar compact />
+            <SearchBar defaultQ={q} defaultLocation={location} defaultCategory={category} />
           </div>
         </div>
       </div>

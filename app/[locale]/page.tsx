@@ -96,7 +96,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           </span>
           <h1
             data-hero-title
-            className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white mb-5 tracking-tight leading-[1.1]"
+            className="text-4xl sm:text-5xl md:text-7xl font-extrabold !text-white mb-5 tracking-tight leading-[1.1]"
           >
             {t("heroTitleLine1")}
             {" "}

@@ -2,18 +2,9 @@
 
 import { ChevronDown, ListFilter, MapPin, Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "@/i18n/navigation";
-
-const LOCATIONS = [
-  "Grand Baie",
-  "Flic en Flac",
-  "Le Morne",
-  "Belle Mare",
-  "Port Louis",
-  "Tamarin",
-  "Blue Bay",
-  "Ebene",
-];
+import { FILTER_LOCATIONS } from "@/lib/filterLocations";
 
 interface CategoryFiltersProps {
   currentLocation: string;
@@ -24,10 +15,15 @@ export default function CategoryFilters({ currentLocation, currentQ }: CategoryF
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations("categoryPage");
+  const [qDraft, setQDraft] = useState(currentQ);
 
-  function applyFilter(location: string) {
+  useEffect(() => {
+    setQDraft(currentQ);
+  }, [currentQ]);
+
+  function pushFilters(location: string, q: string) {
     const params = new URLSearchParams();
-    if (currentQ) params.set("q", currentQ);
+    if (q.trim()) params.set("q", q.trim());
     if (location) params.set("location", location);
     const qs = params.toString();
     router.push(`${pathname}${qs ? `?${qs}` : ""}`);
@@ -42,6 +38,27 @@ export default function CategoryFilters({ currentLocation, currentQ }: CategoryF
   return (
     <div className="sticky top-[72px] z-40 mb-12 py-4 bg-surface/85 backdrop-blur-md" role="region" aria-label={t("filtersAria")}>
       <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-2 px-5 py-2.5 bg-surface-container-lowest rounded-[36px] border border-border-strong shadow-[0_1px_2px_rgba(34,34,34,0.06)] hover:border-text-secondary focus-within:border-primary transition-colors duration-150 min-w-[min(100%,220px)]">
+          <Search aria-hidden className="text-primary size-5 shrink-0" strokeWidth={2} />
+          <label htmlFor="filter-q" className="sr-only">
+            {t("filterKeyword")}
+          </label>
+          <input
+            id="filter-q"
+            type="search"
+            value={qDraft}
+            placeholder={t("filterKeywordPlaceholder")}
+            onChange={(e) => setQDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                pushFilters(currentLocation, qDraft);
+              }
+            }}
+            className="bg-transparent border-none text-text-primary font-medium text-sm w-full min-w-0 outline-none placeholder:text-text-secondary"
+          />
+        </div>
+
         <div className="flex items-center gap-2 px-5 py-2.5 bg-surface-container-lowest rounded-[36px] border border-border-strong shadow-[0_1px_2px_rgba(34,34,34,0.06)] hover:border-text-secondary focus-within:border-primary transition-colors duration-150">
           <MapPin aria-hidden className="text-primary size-5 shrink-0" strokeWidth={2} />
           <label htmlFor="filter-location" className="sr-only">
@@ -50,11 +67,11 @@ export default function CategoryFilters({ currentLocation, currentQ }: CategoryF
           <select
             id="filter-location"
             value={currentLocation}
-            onChange={(e) => applyFilter(e.target.value)}
-            className="bg-transparent border-none text-text-primary font-semibold tracking-wider uppercase text-[11px] cursor-pointer outline-none"
+            onChange={(e) => pushFilters(e.target.value, qDraft)}
+            className="bg-transparent border-none text-text-primary font-semibold tracking-wider uppercase text-[11px] cursor-pointer outline-none max-w-[200px]"
           >
             <option value="">{t("allLocations")}</option>
-            {LOCATIONS.map((l) => (
+            {FILTER_LOCATIONS.map((l) => (
               <option key={l} value={l}>
                 {l}
               </option>
@@ -83,13 +100,6 @@ export default function CategoryFilters({ currentLocation, currentQ }: CategoryF
           <span className="font-semibold text-text-secondary tracking-wider uppercase text-[11px]">{t("style")}</span>
           <ListFilter aria-hidden className="text-primary size-5 shrink-0" strokeWidth={2} />
         </button>
-
-        {currentQ && (
-          <span className="inline-flex items-center gap-1.5 bg-primary-fixed text-on-primary-fixed px-3 py-1.5 rounded-[36px] text-xs font-semibold">
-            <Search aria-hidden className="size-3.5 shrink-0" strokeWidth={2} />
-            {currentQ}
-          </span>
-        )}
 
         {hasFilters && (
           <button

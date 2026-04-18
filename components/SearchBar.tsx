@@ -2,8 +2,9 @@
 
 import { LayoutGrid, MapPin, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
+import { FILTER_LOCATIONS } from "@/lib/filterLocations";
 
 const CATEGORY_SLUGS = [
   { slug: "photography", key: "photography" },
@@ -15,28 +16,33 @@ const CATEGORY_SLUGS = [
   { slug: "decoration", key: "decoration" },
 ] as const;
 
-const LOCATIONS = [
-  "Grand Baie",
-  "Flic en Flac",
-  "Le Morne",
-  "Belle Mare",
-  "Port Louis",
-  "Tamarin",
-  "Blue Bay",
-  "Ebene",
-];
-
 interface SearchBarProps {
   compact?: boolean;
+  /** Đồng bộ form với URL — chỉ cần truyền từ trang /search (server). */
+  defaultQ?: string;
+  defaultLocation?: string;
+  defaultCategory?: string;
 }
 
-export default function SearchBar({ compact = false }: SearchBarProps) {
+export default function SearchBar({
+  compact = false,
+  defaultQ = "",
+  defaultLocation = "",
+  defaultCategory = "",
+}: SearchBarProps) {
   const router = useRouter();
   const t = useTranslations("search");
   const tCat = useTranslations("footer.categories");
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("");
-  const [location, setLocation] = useState("");
+  const [query, setQuery] = useState(defaultQ);
+  const [category, setCategory] = useState(defaultCategory);
+  const [location, setLocation] = useState(defaultLocation);
+
+  useEffect(() => {
+    if (compact) return;
+    setQuery(defaultQ);
+    setLocation(defaultLocation);
+    setCategory(defaultCategory);
+  }, [compact, defaultQ, defaultLocation, defaultCategory]);
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -48,8 +54,8 @@ export default function SearchBar({ compact = false }: SearchBarProps) {
       const qs = params.toString();
       router.push(`/categories/${category}${qs ? `?${qs}` : ""}`);
     } else {
-      params.set("q", query.trim() || "");
-      router.push(`/search?${params.toString()}`);
+      const qs = params.toString();
+      router.push(qs ? `/search?${qs}` : "/search");
     }
   }
 
@@ -138,7 +144,7 @@ export default function SearchBar({ compact = false }: SearchBarProps) {
               className="bg-transparent border-none w-full text-text-primary font-medium cursor-pointer text-sm outline-none appearance-none"
             >
               <option value="">{t("allLocations")}</option>
-              {LOCATIONS.map((l) => (
+              {FILTER_LOCATIONS.map((l) => (
                 <option key={l} value={l}>
                   {l}
                 </option>

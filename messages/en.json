@@ -112,6 +112,8 @@
     "noProvidersEnd": "to list your service.",
     "backHome": "Back to home",
     "filterLocation": "Location",
+    "filterKeyword": "Keyword",
+    "filterKeywordPlaceholder": "Search name or description…",
     "allLocations": "All Locations",
     "price": "Price",
     "style": "Style",
