@@ -1,5 +1,6 @@
 "use client";
 
+import { CircleCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -54,9 +55,7 @@ export default function ContactForm({ providerName }: { providerName: string }) 
   if (status === "success") {
     return (
       <div role="status" aria-live="polite" className="bg-success-container text-on-success-container rounded-[8px] p-6 text-center">
-        <span aria-hidden="true" className="material-symbols-outlined text-4xl mb-3 block">
-          check_circle
-        </span>
+        <CircleCheck aria-hidden className="size-12 mx-auto mb-3 block" strokeWidth={1.75} />
         <p className="font-bold">{t("successTitle")}</p>
         <p className="text-sm mt-1 opacity-90">{t("successBody", { name: providerName })}</p>
       </div>

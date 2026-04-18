@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { ArrowRight, Image as ImagePlaceholder, MapPin, Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { urlFor } from "@/lib/sanity/image";
@@ -13,6 +14,8 @@ interface ProviderCardProps {
   rating?: number;
   priceRange?: string;
   images?: Array<{ asset?: { _ref: string } }>;
+  /** External gallery URLs (e.g. Unsplash); used when no uploaded cover image. */
+  galleryImageUrls?: string[];
   fallbackImage?: string;
   categoryLabel?: string;
 }
@@ -25,6 +28,7 @@ export default function ProviderCard({
   rating,
   priceRange,
   images,
+  galleryImageUrls,
   fallbackImage,
   categoryLabel,
 }: ProviderCardProps) {
@@ -32,7 +36,7 @@ export default function ProviderCard({
   const imageSrc =
     images && images[0]?.asset?._ref
       ? urlFor(images[0]).width(800).height(450).url()
-      : fallbackImage ?? null;
+      : galleryImageUrls?.[0] ?? fallbackImage ?? null;
 
   return (
     <article className="card flex flex-col transition-[transform,box-shadow] duration-150 hover:shadow-[0_12px_32px_rgba(34,34,34,0.12)] hover:-translate-y-0.5 group focus-within:outline-2 focus-within:outline-primary focus-within:outline-offset-2">
@@ -47,7 +51,7 @@ export default function ProviderCard({
           />
         ) : (
           <div className="w-full h-full bg-surface-container-high flex items-center justify-center" aria-hidden="true">
-            <span className="material-symbols-outlined text-5xl text-outline">image</span>
+            <ImagePlaceholder aria-hidden className="size-14 text-outline" strokeWidth={1.25} />
           </div>
         )}
         {rating !== undefined && (
@@ -55,13 +59,7 @@ export default function ProviderCard({
             className="absolute top-3 right-3 bg-white/95 backdrop-blur px-2.5 py-1 rounded-[36px] flex items-center gap-1 shadow-[0_1px_2px_rgba(34,34,34,0.06)]"
             aria-label={t("ratingAria", { rating: rating.toFixed(1) })}
           >
-            <span
-              aria-hidden="true"
-              className="material-symbols-outlined text-primary"
-              style={{ fontVariationSettings: "'FILL' 1", fontSize: "14px" }}
-            >
-              star
-            </span>
+            <Star aria-hidden className="size-3.5 fill-primary stroke-primary text-primary" strokeWidth={1.5} />
             <span className="text-xs font-bold text-text-primary">{rating.toFixed(1)}</span>
           </div>
         )}
@@ -82,9 +80,7 @@ export default function ProviderCard({
         )}
         {location && (
           <div className="flex items-center text-text-secondary text-xs mb-4">
-            <span aria-hidden="true" className="material-symbols-outlined mr-1" style={{ fontSize: "14px" }}>
-              location_on
-            </span>
+            <MapPin aria-hidden className="size-3.5 mr-1 shrink-0 text-current" strokeWidth={2} />
             {location}
           </div>
         )}
@@ -94,13 +90,11 @@ export default function ProviderCard({
           className="btn btn-secondary mt-auto w-full"
         >
           {t("viewProfile")}
-          <span
-            aria-hidden="true"
-            className="material-symbols-outlined text-base transition-transform duration-150 group-hover:translate-x-0.5"
-            style={{ fontSize: "16px" }}
-          >
-            arrow_forward
-          </span>
+          <ArrowRight
+            aria-hidden
+            className="size-4 transition-transform duration-150 group-hover:translate-x-0.5"
+            strokeWidth={2}
+          />
         </Link>
       </div>
     </article>

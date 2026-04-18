@@ -1,8 +1,7 @@
+import { BadgeCheck, Handshake, Palmtree, Smartphone } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import AboutAnimations from "@/components/animations/AboutAnimations";
-
 export async function generateMetadata({
   params,
 }: {
@@ -32,10 +31,15 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
   ];
 
   const valueKeys = ["quality", "local", "direct", "mobile"] as const;
+  const valueIcons = {
+    quality: BadgeCheck,
+    local: Palmtree,
+    direct: Handshake,
+    mobile: Smartphone,
+  } as const;
 
   return (
     <div className="pt-20" data-page="about">
-      <AboutAnimations />
       <section data-about-hero className="bg-primary-container text-on-primary-container py-24 px-6">
         <div className="max-w-3xl mx-auto text-center">
           <h1 className="text-5xl font-extrabold mb-6">{t("heroTitle")}</h1>
@@ -69,19 +73,20 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
       <section data-about-values className="max-w-[1200px] mx-auto px-6 py-20">
         <h2 className="text-3xl font-extrabold text-on-surface mb-12 text-center">{t("valuesTitle")}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {valueKeys.map((k) => (
+          {valueKeys.map((k) => {
+            const Icon = valueIcons[k];
+            return (
             <div
               key={k}
               data-about-value
               className="bg-surface-container-lowest rounded p-8 shadow-sm"
             >
-              <span className="material-symbols-outlined text-primary text-4xl mb-4 block">
-                {k === "quality" ? "verified" : k === "local" ? "island" : k === "direct" ? "handshake" : "devices"}
-              </span>
+              <Icon aria-hidden className="text-primary size-10 mb-4 block" strokeWidth={1.75} />
               <h3 className="text-xl font-bold text-on-surface mb-2">{t(`values.${k}.title`)}</h3>
               <p className="text-on-surface-variant leading-relaxed">{t(`values.${k}.desc`)}</p>
             </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 

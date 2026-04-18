@@ -29,7 +29,8 @@ export const categoriesQuery = groq`
     "name": ${catName},
     "slug": slug.current,
     "description": ${L("description")},
-    image
+    image,
+    coverImageUrl
   }
 `;
 
@@ -50,6 +51,7 @@ export const providersByCategoryQuery = groq`
     "shortDescription": ${L("shortDescription")},
     location,
     images,
+    galleryImageUrls,
     rating,
     priceRange,
     category->{ "name": ${catName}, "slug": slug.current }
@@ -74,6 +76,7 @@ export const searchProvidersQuery = groq`
     "shortDescription": ${L("shortDescription")},
     location,
     images,
+    galleryImageUrls,
     rating,
     priceRange,
     category->{ "name": ${catName}, "slug": slug.current }
@@ -89,6 +92,7 @@ export const providerBySlugQuery = groq`
     "description": ${L("description")},
     location,
     images,
+    galleryImageUrls,
     "services": select(
       defined(services.en) || defined(services.fr) =>
         select($locale == "fr" => coalesce(services.fr, services.en), coalesce(services.en, services.fr)),
@@ -110,6 +114,7 @@ export const featuredProvidersQuery = groq`
     "shortDescription": ${L("shortDescription")},
     location,
     images,
+    galleryImageUrls,
     rating,
     priceRange,
     category->{ "name": ${catName}, "slug": slug.current }

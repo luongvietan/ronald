@@ -1,5 +1,6 @@
 "use client";
 
+import { CircleCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -30,9 +31,7 @@ export default function NewsletterForm() {
   if (status === "success") {
     return (
       <p role="status" aria-live="polite" className="inline-flex items-center gap-2 text-white font-semibold">
-        <span aria-hidden="true" className="material-symbols-outlined">
-          check_circle
-        </span>
+        <CircleCheck aria-hidden className="size-5 shrink-0" strokeWidth={2} />
         {t("success")}
       </p>
     );

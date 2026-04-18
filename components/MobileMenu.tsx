@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronRight, Menu, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
@@ -54,9 +55,7 @@ export default function MobileMenu({ transparent = false }: { transparent?: bool
         aria-expanded={open}
         aria-controls="mobile-menu-panel"
       >
-        <span className="material-symbols-outlined text-2xl">
-          {open ? "close" : "menu"}
-        </span>
+        {open ? <X aria-hidden className="size-7" strokeWidth={2} /> : <Menu aria-hidden className="size-7" strokeWidth={2} />}
       </button>
 
       {open && (
@@ -88,7 +87,7 @@ export default function MobileMenu({ transparent = false }: { transparent?: bool
               aria-label={tMobile("close")}
               className="w-9 h-9 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface-container transition-colors duration-150"
             >
-              <span className="material-symbols-outlined">close</span>
+              <X aria-hidden className="size-6" strokeWidth={2} />
             </button>
           </div>
         </div>
@@ -124,7 +123,7 @@ export default function MobileMenu({ transparent = false }: { transparent?: bool
                 onClick={() => setOpen(false)}
                 className="px-4 py-2 rounded-[8px] text-sm text-text-secondary hover:bg-surface-container-low hover:text-text-primary flex items-center gap-2 transition-colors duration-150"
               >
-                <span className="material-symbols-outlined text-primary text-base">chevron_right</span>
+                <ChevronRight aria-hidden className="text-primary size-4 shrink-0" strokeWidth={2} />
                 {tFooter(cat.key)}
               </Link>
             ))}

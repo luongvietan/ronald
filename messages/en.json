@@ -71,15 +71,8 @@
       "catering": "Catering",
       "musicDj": "Music / DJ"
     },
-    "fallbackCategories": {
-      "photography": "Photography",
-      "catering": "Catering",
-      "flowersDecoration": "Flowers & Decoration",
-      "musicDj": "Music / DJ",
-      "venues": "Venues",
-      "eventPlanner": "Event Planner",
-      "decoration": "Decoration"
-    }
+    "emptyCategories": "No categories are published yet. Add categories in Sanity Studio when you are ready.",
+    "emptyFeatured": "No featured providers yet. Mark providers as “Featured on Homepage” in Sanity Studio to show them here."
   },
   "search": {
     "metaTitle": "Search Providers",
@@ -143,6 +136,13 @@
     "noPhotos": "No photos yet",
     "photoAlt": "{name} — photo {n}",
     "galleryAlt": "{name}",
+    "galleryDotsAria": "Gallery slides",
+    "galleryDotAria": "Show image {n} of {total}",
+    "viewPhotosCount": "View photos ({count})",
+    "galleryDialogTitle": "{name} — photos",
+    "galleryClose": "Close gallery",
+    "galleryPrev": "Previous photo",
+    "galleryNext": "Next photo",
     "breadcrumbHome": "Home",
     "ratingAria": "Rating {rating} out of 5"
   },

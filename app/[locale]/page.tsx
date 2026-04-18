@@ -1,24 +1,14 @@
 import Image from "next/image";
+import { ArrowRight, LayoutGrid, MessageCircle, Search, UserCheck } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import SearchBar from "@/components/SearchBar";
 import CategoryCard from "@/components/CategoryCard";
 import ProviderCard from "@/components/ProviderCard";
 import NewsletterForm from "@/components/NewsletterForm";
-import HomeAnimations from "@/components/animations/HomeAnimations";
 import { client } from "@/lib/sanity/client";
 import { featuredProvidersQuery, categoriesQuery } from "@/lib/sanity/queries";
 import { Link } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
-
-const STATIC_CATEGORY_SLUGS = [
-  { slug: "photography", key: "photography" as const, fallbackImage: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80" },
-  { slug: "catering", key: "catering" as const, fallbackImage: "https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=800&q=80" },
-  { slug: "flowers-decoration", key: "flowersDecoration" as const, fallbackImage: "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?auto=format&fit=crop&w=800&q=80" },
-  { slug: "music-dj", key: "musicDj" as const, fallbackImage: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=800&q=80" },
-  { slug: "venues", key: "venues" as const, fallbackImage: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=800&q=80" },
-  { slug: "event-planner", key: "eventPlanner" as const, fallbackImage: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=800&q=80" },
-  { slug: "decoration", key: "decoration" as const, fallbackImage: "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=800&q=80" },
-];
 
 const HERO_PILLS: { slug: string; key: "photography" | "venues" | "catering" | "musicDj" }[] = [
   { slug: "photography", key: "photography" },
@@ -27,20 +17,24 @@ const HERO_PILLS: { slug: string; key: "photography" | "venues" | "catering" | "
   { slug: "music-dj", key: "musicDj" },
 ];
 
-const DEMO_EN = [
-  { name: "Culinaria Mauritius", slug: "culinaria-mauritius", shortDescription: "Gourmet catering specialists for premium weddings and corporate events.", location: "Beau Plan, Pamplemousses", rating: 4.9, fallbackImage: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80" },
-  { name: "Oceanic Frames", slug: "oceanic-frames", shortDescription: "Capturing timeless moments on Mauritius's most breathtaking coastlines.", location: "Tamarin, Black River", rating: 5.0, fallbackImage: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=800&q=80" },
-  { name: "Elite Event Design", slug: "elite-event-design", shortDescription: "Luxury floral and décor transformations for weddings and galas island-wide.", location: "Ebene, Mauritius", rating: 4.8, fallbackImage: "https://images.unsplash.com/photo-1487530811176-3780de880c2d?auto=format&fit=crop&w=800&q=80" },
-];
-
-const DEMO_FR = [
-  { name: "Culinaria Mauritius", slug: "culinaria-mauritius", shortDescription: "Traiteur gastronomique pour mariages haut de gamme et événements d'entreprise.", location: "Beau Plan, Pamplemousses", rating: 4.9, fallbackImage: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80" },
-  { name: "Oceanic Frames", slug: "oceanic-frames", shortDescription: "Des instants intemporels sur les plus beaux rivages de Maurice.", location: "Tamarin, Rivière Noire", rating: 5.0, fallbackImage: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=800&q=80" },
-  { name: "Elite Event Design", slug: "elite-event-design", shortDescription: "Fleurs et décoration de luxe pour mariages et galas dans toute l'île.", location: "Ebène, Maurice", rating: 4.8, fallbackImage: "https://images.unsplash.com/photo-1487530811176-3780de880c2d?auto=format&fit=crop&w=800&q=80" },
-];
-
-type SanityCategory = { _id: string; name: string; slug: string; image?: { asset?: { _ref: string } } };
-type SanityProvider = { _id: string; name: string; slug: string; shortDescription?: string; location?: string; rating?: number; priceRange?: string; images?: Array<{ asset?: { _ref: string } }> };
+type SanityCategory = {
+  _id: string;
+  name: string;
+  slug: string;
+  image?: { asset?: { _ref: string } };
+  coverImageUrl?: string;
+};
+type SanityProvider = {
+  _id: string;
+  name: string;
+  slug: string;
+  shortDescription?: string;
+  location?: string;
+  rating?: number;
+  priceRange?: string;
+  images?: Array<{ asset?: { _ref: string } }>;
+  galleryImageUrls?: string[];
+};
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -59,18 +53,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     /* Sanity not yet configured */
   }
 
-  const displayCategories =
-    categories.length > 0
-      ? categories.map((c) => ({ name: c.name, slug: c.slug, image: c.image, fallbackImage: undefined as string | undefined }))
-      : STATIC_CATEGORY_SLUGS.map((c) => ({
-          name: t(`fallbackCategories.${c.key}`),
-          slug: c.slug,
-          image: undefined as { asset?: { _ref: string } } | undefined,
-          fallbackImage: c.fallbackImage,
-        }));
-
-  const showDemoProviders = featuredProviders.length === 0;
-  const demoProviders = loc === "fr" ? DEMO_FR : DEMO_EN;
+  const displayCategories = categories.map((c) => ({
+    name: c.name,
+    slug: c.slug,
+    image: c.image,
+    fallbackImage: c.coverImageUrl,
+  }));
 
   const STATS = [
     { value: "7+", label: t("stats.categories") },
@@ -83,7 +71,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   return (
     <div className="overflow-hidden" data-page="home">
-      <HomeAnimations />
       <section
         data-hero
         className="relative min-h-[640px] md:min-h-[820px] w-full flex items-center justify-center"
@@ -165,28 +152,36 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           </div>
         </div>
 
-        <div data-categories-grid className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-          {displayCategories.map((cat) => (
-            <CategoryCard key={cat.slug} name={cat.name} slug={cat.slug} image={cat.image} fallbackImage={cat.fallbackImage} />
-          ))}
-          <Link
-            href="/categories/photography"
-            aria-label={t("viewAllAria")}
-            className="group relative aspect-square rounded-[8px] overflow-hidden flex flex-col items-center justify-center bg-primary-fixed border-2 border-dashed border-primary/30 hover:bg-primary hover:border-primary transition-colors duration-150"
-          >
-            <span aria-hidden="true" className="material-symbols-outlined text-4xl text-primary group-hover:text-on-primary mb-3 transition-colors duration-150">
-              grid_view
-            </span>
-            <p className="text-primary group-hover:text-on-primary font-bold text-sm text-center leading-tight transition-colors duration-150">
-              {t("viewAllLine1")}
-              <br />
-              {t("viewAllLine2")}
-            </p>
-            <span aria-hidden="true" className="material-symbols-outlined text-primary group-hover:text-on-primary mt-2 transition-colors duration-150" style={{ fontSize: "18px" }}>
-              arrow_forward
-            </span>
-          </Link>
-        </div>
+        {displayCategories.length === 0 ? (
+          <p className="text-center text-on-surface-variant py-12 max-w-md mx-auto leading-relaxed">{t("emptyCategories")}</p>
+        ) : (
+          <div data-categories-grid className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+            {displayCategories.map((cat) => (
+              <CategoryCard key={cat.slug} name={cat.name} slug={cat.slug} image={cat.image} fallbackImage={cat.fallbackImage} />
+            ))}
+            <Link
+              href={`/categories/${displayCategories[0]?.slug ?? "photography"}`}
+              aria-label={t("viewAllAria")}
+              className="group relative aspect-square rounded-[8px] overflow-hidden flex flex-col items-center justify-center bg-primary-fixed border-2 border-dashed border-primary/30 hover:bg-primary hover:border-primary transition-colors duration-150"
+            >
+              <LayoutGrid
+                aria-hidden
+                className="size-10 text-primary group-hover:text-on-primary mb-3 transition-colors duration-150"
+                strokeWidth={1.75}
+              />
+              <p className="text-primary group-hover:text-on-primary font-bold text-sm text-center leading-tight transition-colors duration-150">
+                {t("viewAllLine1")}
+                <br />
+                {t("viewAllLine2")}
+              </p>
+              <ArrowRight
+                aria-hidden
+                className="size-[18px] text-primary group-hover:text-on-primary mt-2 transition-colors duration-150"
+                strokeWidth={2}
+              />
+            </Link>
+          </div>
+        )}
       </section>
 
       <section data-how className="bg-surface-container-low py-20 md:py-24">
@@ -204,9 +199,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               <div key={step} data-how-step className="text-center group relative">
                 <div className="relative inline-block mb-5">
                   <div className="w-16 h-16 rounded-full bg-white shadow-md border border-outline-variant/40 mx-auto flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
-                    <span className="material-symbols-outlined text-primary text-2xl group-hover:text-on-primary transition-colors duration-300">
-                      {step === "1" ? "search" : step === "2" ? "person_check" : "chat"}
-                    </span>
+                    {step === "1" ? (
+                      <Search aria-hidden className="text-primary size-7 group-hover:text-on-primary transition-colors duration-300" strokeWidth={2} />
+                    ) : step === "2" ? (
+                      <UserCheck aria-hidden className="text-primary size-7 group-hover:text-on-primary transition-colors duration-300" strokeWidth={2} />
+                    ) : (
+                      <MessageCircle aria-hidden className="text-primary size-7 group-hover:text-on-primary transition-colors duration-300" strokeWidth={2} />
+                    )}
                   </div>
                   <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-primary text-on-primary text-[10px] font-extrabold flex items-center justify-center shadow-sm">
                     {i + 1}
@@ -230,21 +229,31 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               <span className="section-label">{t("featuredLabel")}</span>
               <h2 className="text-3xl md:text-4xl font-extrabold text-on-surface">{t("featuredTitle")}</h2>
             </div>
-            <Link href="/categories/photography" className="text-primary font-bold text-sm flex items-center gap-1.5 hover:gap-2.5 transition-all self-start md:self-auto">
+            <Link href="/search" className="text-primary font-bold text-sm flex items-center gap-1.5 hover:gap-2.5 transition-all self-start md:self-auto">
               {t("exploreAll")}
-              <span className="material-symbols-outlined text-base">arrow_forward</span>
+              <ArrowRight aria-hidden className="size-4 shrink-0" strokeWidth={2} />
             </Link>
           </div>
 
-          <div data-featured-grid className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
-            {showDemoProviders
-              ? demoProviders.map((p) => (
-                  <ProviderCard key={p.slug} name={p.name} slug={p.slug} shortDescription={p.shortDescription} location={p.location} rating={p.rating} fallbackImage={p.fallbackImage} />
-                ))
-              : featuredProviders.map((p) => (
-                  <ProviderCard key={p._id} name={p.name} slug={p.slug} shortDescription={p.shortDescription} location={p.location} rating={p.rating} priceRange={p.priceRange} images={p.images} />
-                ))}
-          </div>
+          {featuredProviders.length === 0 ? (
+            <p className="text-center text-on-surface-variant py-12 max-w-md mx-auto leading-relaxed">{t("emptyFeatured")}</p>
+          ) : (
+            <div data-featured-grid className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
+              {featuredProviders.map((p) => (
+                <ProviderCard
+                  key={p._id}
+                  name={p.name}
+                  slug={p.slug}
+                  shortDescription={p.shortDescription}
+                  location={p.location}
+                  rating={p.rating}
+                  priceRange={p.priceRange}
+                  images={p.images}
+                  galleryImageUrls={p.galleryImageUrls}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

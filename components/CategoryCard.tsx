@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { urlFor } from "@/lib/sanity/image";
@@ -46,12 +47,11 @@ export default function CategoryCard({
       />
       <div className="absolute bottom-0 left-0 right-0 p-5 flex items-end justify-between">
         <p className="text-white font-bold text-lg font-headline leading-tight">{name}</p>
-        <span
-          aria-hidden="true"
-          className="material-symbols-outlined text-white text-xl opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-150"
-        >
-          arrow_forward
-        </span>
+        <ArrowRight
+          aria-hidden
+          className="text-white size-5 opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-150"
+          strokeWidth={2}
+        />
       </div>
     </Link>
   );

@@ -45,5 +45,17 @@ export const category = defineType({
       type: "image",
       options: { hotspot: true },
     }),
+    defineField({
+      name: "coverImageUrl",
+      title: "Cover image URL",
+      type: "url",
+      description:
+        "Optional. Direct HTTPS image URL (e.g. Unsplash). Used if no uploaded cover above, or as a quick preview.",
+      validation: (Rule) =>
+        Rule.uri({
+          scheme: ["https"],
+          allowRelative: false,
+        }),
+    }),
   ],
 });

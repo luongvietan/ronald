@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronDown, ListFilter, MapPin, Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/navigation";
 
@@ -42,9 +43,7 @@ export default function CategoryFilters({ currentLocation, currentQ }: CategoryF
     <div className="sticky top-[72px] z-40 mb-12 py-4 bg-surface/85 backdrop-blur-md" role="region" aria-label={t("filtersAria")}>
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2 px-5 py-2.5 bg-surface-container-lowest rounded-[36px] border border-border-strong shadow-[0_1px_2px_rgba(34,34,34,0.06)] hover:border-text-secondary focus-within:border-primary transition-colors duration-150">
-          <span aria-hidden="true" className="material-symbols-outlined text-primary text-lg">
-            location_on
-          </span>
+          <MapPin aria-hidden className="text-primary size-5 shrink-0" strokeWidth={2} />
           <label htmlFor="filter-location" className="sr-only">
             {t("filterLocation")}
           </label>
@@ -71,9 +70,7 @@ export default function CategoryFilters({ currentLocation, currentQ }: CategoryF
           className="flex items-center gap-2 px-5 py-2.5 bg-surface-container-lowest rounded-[36px] border border-border-strong shadow-[0_1px_2px_rgba(34,34,34,0.06)] opacity-55 cursor-not-allowed"
         >
           <span className="font-semibold text-text-secondary tracking-wider uppercase text-[11px]">{t("price")}</span>
-          <span aria-hidden="true" className="material-symbols-outlined text-primary text-lg">
-            expand_more
-          </span>
+          <ChevronDown aria-hidden className="text-primary size-5 shrink-0" strokeWidth={2} />
         </button>
 
         <button
@@ -84,16 +81,12 @@ export default function CategoryFilters({ currentLocation, currentQ }: CategoryF
           className="flex items-center gap-2 px-5 py-2.5 bg-surface-container-lowest rounded-[36px] border border-border-strong shadow-[0_1px_2px_rgba(34,34,34,0.06)] opacity-55 cursor-not-allowed"
         >
           <span className="font-semibold text-text-secondary tracking-wider uppercase text-[11px]">{t("style")}</span>
-          <span aria-hidden="true" className="material-symbols-outlined text-primary text-lg">
-            filter_list
-          </span>
+          <ListFilter aria-hidden className="text-primary size-5 shrink-0" strokeWidth={2} />
         </button>
 
         {currentQ && (
           <span className="inline-flex items-center gap-1.5 bg-primary-fixed text-on-primary-fixed px-3 py-1.5 rounded-[36px] text-xs font-semibold">
-            <span aria-hidden="true" className="material-symbols-outlined text-sm">
-              search
-            </span>
+            <Search aria-hidden className="size-3.5 shrink-0" strokeWidth={2} />
             {currentQ}
           </span>
         )}
@@ -104,9 +97,7 @@ export default function CategoryFilters({ currentLocation, currentQ }: CategoryF
             onClick={clearAll}
             className="ml-auto inline-flex items-center gap-1 text-primary font-semibold text-sm hover:underline transition-colors duration-150 rounded px-1"
           >
-            <span aria-hidden="true" className="material-symbols-outlined text-base">
-              close
-            </span>
+            <X aria-hidden className="size-4 shrink-0" strokeWidth={2} />
             {t("resetAll")}
           </button>
         )}

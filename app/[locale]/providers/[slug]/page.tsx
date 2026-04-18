@@ -1,9 +1,10 @@
+import { CheckCircle2, ChevronRight, Image as ImagePlaceholder, Mail, MapPin, Star } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 import { client } from "@/lib/sanity/client";
 import { providerBySlugQuery, allProviderSlugsQuery } from "@/lib/sanity/queries";
-import { urlFor } from "@/lib/sanity/image";
+import { buildProviderGalleryUrls } from "@/lib/sanity/build-provider-gallery";
 import ContactForm from "@/components/ContactForm";
-import ProviderAnimations from "@/components/animations/ProviderAnimations";
-import Image from "next/image";
+import ProviderGalleryHero from "@/components/ProviderGalleryHero";
 import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -20,6 +21,7 @@ type Provider = {
   description?: string;
   location?: string;
   images?: Array<{ asset?: { _ref: string } }>;
+  galleryImageUrls?: string[];
   services?: string[];
   whatsapp?: string;
   email?: string;
@@ -83,7 +85,7 @@ export default async function ProviderPage({
 
   if (!provider) notFound();
 
-  const images = provider.images ?? [];
+  const galleryUrls = buildProviderGalleryUrls(provider.images, provider.galleryImageUrls);
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
@@ -101,59 +103,14 @@ export default async function ProviderPage({
 
   return (
     <div className="pt-20" data-page="provider">
-      <ProviderAnimations />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <section className="w-full bg-surface-container-lowest">
-        {images.length > 0 ? (
-          <>
-            <div
-              data-provider-gallery
-              className="md:hidden flex gap-2 overflow-x-auto px-4 py-3 snap-x snap-mandatory scrollbar-none"
-            >
-              {images.slice(0, 6).map((img, i) => (
-                <div key={i} className="relative flex-none w-72 aspect-video rounded overflow-hidden snap-start">
-                  {img?.asset?._ref && (
-                    <Image
-                      src={urlFor(img).width(576).height(324).url()}
-                      alt={t("photoAlt", { name: provider!.name, n: i + 1 })}
-                      fill
-                      className="object-cover"
-                      priority={i === 0}
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-            <div data-provider-gallery className="hidden md:grid grid-cols-4 h-[480px] gap-1">
-              <div className="col-span-2 row-span-2 relative overflow-hidden">
-                {images[0]?.asset?._ref && (
-                  <Image
-                    src={urlFor(images[0]).width(900).height(900).url()}
-                    alt={t("galleryAlt", { name: provider.name })}
-                    fill
-                    className="object-cover hover:scale-105 transition-transform duration-700"
-                    priority
-                  />
-                )}
-              </div>
-              {images.slice(1, 5).map((img, i) => (
-                <div key={i} className="relative overflow-hidden">
-                  {img?.asset?._ref && (
-                    <Image
-                      src={urlFor(img).width(450).height(450).url()}
-                      alt={t("photoAlt", { name: provider!.name, n: i + 2 })}
-                      fill
-                      className="object-cover hover:scale-105 transition-transform duration-700"
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          </>
+      <section data-provider-gallery className="w-full bg-surface-container-lowest">
+        {galleryUrls.length > 0 ? (
+          <ProviderGalleryHero images={galleryUrls} providerName={provider.name} />
         ) : (
           <div className="h-[280px] md:h-[380px] flex flex-col items-center justify-center bg-surface-container gap-3">
-            <span className="material-symbols-outlined text-6xl text-outline">image</span>
+            <ImagePlaceholder aria-hidden className="size-16 text-outline" strokeWidth={1.25} />
             <p className="text-on-surface-variant text-sm">{t("noPhotos")}</p>
           </div>
         )}
@@ -164,13 +121,13 @@ export default async function ProviderPage({
           <Link href="/" className="hover:text-primary transition-colors">
             {t("breadcrumbHome")}
           </Link>
-          <span className="material-symbols-outlined text-sm">chevron_right</span>
+          <ChevronRight aria-hidden className="size-4 text-current shrink-0" strokeWidth={2} />
           {provider.category && (
             <>
               <Link href={`/categories/${provider.category.slug}`} className="hover:text-primary transition-colors">
                 {provider.category.name}
               </Link>
-              <span className="material-symbols-outlined text-sm">chevron_right</span>
+              <ChevronRight aria-hidden className="size-4 text-current shrink-0" strokeWidth={2} />
             </>
           )}
           <span className="text-on-surface font-medium">{provider.name}</span>
@@ -188,19 +145,13 @@ export default async function ProviderPage({
               <div className="flex flex-wrap items-center gap-4 text-on-surface-variant text-sm">
                 {provider.location && (
                   <div className="flex items-center gap-1">
-                    <span className="material-symbols-outlined text-sm">location_on</span>
+                    <MapPin aria-hidden className="size-4 shrink-0" strokeWidth={2} />
                     {provider.location}
                   </div>
                 )}
                 {provider.rating !== undefined && (
                   <div className="flex items-center gap-1" aria-label={t("ratingAria", { rating: provider.rating.toFixed(1) })}>
-                    <span
-                      aria-hidden="true"
-                      className="material-symbols-outlined text-primary text-sm"
-                      style={{ fontVariationSettings: "'FILL' 1" }}
-                    >
-                      star
-                    </span>
+                    <Star aria-hidden className="size-4 fill-primary stroke-primary text-primary shrink-0" strokeWidth={1.5} />
                     <span className="font-bold text-text-primary">{provider.rating.toFixed(1)}</span>
                   </div>
                 )}
@@ -221,7 +172,7 @@ export default async function ProviderPage({
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {provider.services.map((service, i) => (
                     <li key={i} className="flex items-start gap-3">
-                      <span className="material-symbols-outlined text-primary text-xl mt-0.5">check_circle</span>
+                      <CheckCircle2 aria-hidden className="text-primary size-5 mt-0.5 shrink-0" strokeWidth={2} />
                       <span className="text-on-surface">{service}</span>
                     </li>
                   ))}
@@ -247,9 +198,7 @@ export default async function ProviderPage({
                     aria-label={t("whatsappAria", { name: provider.name })}
                     className="btn w-full bg-[#25D366] text-white hover:bg-[#1fb85a] active:bg-[#199a4b] shadow-[0_1px_2px_rgba(34,34,34,0.06)]"
                   >
-                    <span aria-hidden="true" className="material-symbols-outlined text-[20px]">
-                      chat
-                    </span>
+                    <FaWhatsapp aria-hidden className="size-5 shrink-0" />
                     {t("whatsapp")}
                   </a>
                 )}
@@ -260,9 +209,7 @@ export default async function ProviderPage({
                     aria-label={t("emailAria", { name: provider.name })}
                     className="btn btn-secondary w-full border border-border-strong"
                   >
-                    <span aria-hidden="true" className="material-symbols-outlined text-[20px]">
-                      mail
-                    </span>
+                    <Mail aria-hidden className="size-5 shrink-0" strokeWidth={2} />
                     {t("email")}
                   </a>
                 )}

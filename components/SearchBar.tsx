@@ -1,5 +1,6 @@
 "use client";
 
+import { LayoutGrid, MapPin, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
@@ -59,9 +60,7 @@ export default function SearchBar({ compact = false }: SearchBarProps) {
           {t("searchProvidersLabel")}
         </label>
         <div className="flex-1 flex items-center px-4 py-2.5 bg-surface-container-lowest rounded-[36px] border border-border-strong focus-within:border-primary focus-within:shadow-[0_0_0_3px_rgba(181,44,63,0.15)] transition-all duration-150">
-          <span aria-hidden="true" className="material-symbols-outlined text-text-secondary text-xl mr-2">
-            search
-          </span>
+          <Search aria-hidden className="text-text-secondary size-5 mr-2 shrink-0" strokeWidth={2} />
           <input
             id="search-compact-q"
             type="text"
@@ -82,9 +81,7 @@ export default function SearchBar({ compact = false }: SearchBarProps) {
     <form role="search" aria-label={t("findAria")} onSubmit={handleSearch} className="w-full max-w-3xl mx-auto">
       <div className="flex flex-col md:flex-row items-stretch md:items-center bg-white/97 backdrop-blur-xl rounded-[16px] md:rounded-[36px] shadow-[0_8px_40px_rgba(0,0,0,0.25)] overflow-hidden border border-white/60">
         <div className="flex-[1.4] flex items-center gap-3 px-5 py-4 md:py-3.5 hover:bg-black/[0.02] transition-colors duration-150">
-          <span aria-hidden="true" className="material-symbols-outlined text-primary/80 flex-shrink-0 text-[20px]">
-            search
-          </span>
+          <Search aria-hidden className="text-primary/80 size-5 shrink-0" strokeWidth={2} />
           <div className="flex flex-col min-w-0 flex-1">
             <label htmlFor="search-what" className="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-0.5 select-none">
               {t("what")}
@@ -104,9 +101,7 @@ export default function SearchBar({ compact = false }: SearchBarProps) {
         <div className="md:hidden h-px bg-border-strong/50 mx-4" />
 
         <div className="flex-1 flex items-center gap-3 px-5 py-4 md:py-3.5 hover:bg-black/[0.02] transition-colors duration-150">
-          <span aria-hidden="true" className="material-symbols-outlined text-primary/80 flex-shrink-0 text-[20px]">
-            category
-          </span>
+          <LayoutGrid aria-hidden className="text-primary/80 size-5 shrink-0" strokeWidth={2} />
           <div className="flex flex-col min-w-0 flex-1">
             <label htmlFor="search-category" className="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-0.5 select-none">
               {t("category")}
@@ -131,9 +126,7 @@ export default function SearchBar({ compact = false }: SearchBarProps) {
         <div className="md:hidden h-px bg-border-strong/50 mx-4" />
 
         <div className="flex-1 flex items-center gap-3 px-5 py-4 md:py-3.5 hover:bg-black/[0.02] transition-colors duration-150">
-          <span aria-hidden="true" className="material-symbols-outlined text-primary/80 flex-shrink-0 text-[20px]">
-            location_on
-          </span>
+          <MapPin aria-hidden className="text-primary/80 size-5 shrink-0" strokeWidth={2} />
           <div className="flex flex-col min-w-0 flex-1">
             <label htmlFor="search-location" className="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-0.5 select-none">
               {t("location")}
@@ -156,9 +149,7 @@ export default function SearchBar({ compact = false }: SearchBarProps) {
 
         <div className="px-3 py-3 md:py-2">
           <button type="submit" className="btn btn-primary w-full md:w-auto">
-            <span aria-hidden="true" className="material-symbols-outlined text-[18px]">
-              search
-            </span>
+            <Search aria-hidden className="size-[18px] shrink-0" strokeWidth={2} />
             <span>{t("search")}</span>
           </button>
         </div>

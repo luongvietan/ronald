@@ -1,3 +1,4 @@
+import { Camera, Globe, Share2 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 
@@ -12,10 +13,10 @@ const CATEGORY_SLUGS = [
 ] as const;
 
 const SOCIALS = [
-  { label: "Facebook", icon: "social_leaderboard", href: "#" },
-  { label: "Instagram", icon: "photo_camera", href: "#" },
-  { label: "Website", icon: "language", href: "#" },
-];
+  { label: "Facebook", Icon: Share2, href: "#" },
+  { label: "Instagram", Icon: Camera, href: "#" },
+  { label: "Website", Icon: Globe, href: "#" },
+] as const;
 
 export default async function Footer() {
   const t = await getTranslations("footer");
@@ -29,14 +30,14 @@ export default async function Footer() {
             <div className="text-xl font-bold text-primary mb-4 font-headline">L&apos;Île Host</div>
             <p className="text-text-secondary max-w-xs leading-relaxed text-sm">{t("tagline")}</p>
             <ul className="flex gap-3 mt-6" aria-label="Social links">
-              {SOCIALS.map((s) => (
-                <li key={s.label}>
+              {SOCIALS.map(({ Icon, label, href }) => (
+                <li key={label}>
                   <a
-                    href={s.href}
-                    aria-label={s.label}
+                    href={href}
+                    aria-label={label}
                     className="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-text-secondary hover:bg-primary hover:text-on-primary transition-colors duration-150"
                   >
-                    <span className="material-symbols-outlined text-base">{s.icon}</span>
+                    <Icon aria-hidden className="size-4" strokeWidth={2} />
                   </a>
                 </li>
               ))}

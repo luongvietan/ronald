@@ -1,5 +1,6 @@
 "use client";
 
+import { CircleUser } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useEffect, useState } from "react";
@@ -86,7 +87,7 @@ export default function Navbar() {
               transparent ? "text-white hover:bg-white/15" : "text-primary hover:bg-surface-container"
             }`}
           >
-            <span className="material-symbols-outlined text-[28px]">account_circle</span>
+            <CircleUser aria-hidden className="size-7" strokeWidth={1.75} />
           </button>
         </div>
 

@@ -1,8 +1,8 @@
+import { LayoutGrid, MapPin, Search, SearchX } from "lucide-react";
 import { client } from "@/lib/sanity/client";
 import { searchProvidersQuery } from "@/lib/sanity/queries";
 import ProviderCard from "@/components/ProviderCard";
 import SearchBar from "@/components/SearchBar";
-import SearchAnimations from "@/components/animations/SearchAnimations";
 import { Link } from "@/i18n/navigation";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -17,6 +17,7 @@ type Provider = {
   rating?: number;
   priceRange?: string;
   images?: Array<{ asset?: { _ref: string } }>;
+  galleryImageUrls?: string[];
   category?: { name: string; slug: string };
 };
 
@@ -67,7 +68,6 @@ export default async function SearchPage({
 
   return (
     <div className="pt-24 pb-20" data-page="search">
-      <SearchAnimations />
       <div className="bg-surface-container-low py-10">
         <div className="max-w-[1200px] mx-auto px-6">
           <h1 data-search-heading className="text-3xl font-extrabold text-on-surface mb-6">
@@ -85,19 +85,19 @@ export default async function SearchPage({
             <span className="text-sm text-on-surface-variant font-medium">{t("activeFilters")}</span>
             {q && (
               <span className="inline-flex items-center gap-1.5 bg-primary-fixed text-on-primary-fixed px-3 py-1.5 rounded-full text-sm font-semibold">
-                <span className="material-symbols-outlined text-base">search</span>
+                <Search aria-hidden className="size-4 shrink-0" strokeWidth={2} />
                 {q}
               </span>
             )}
             {category && (
               <span className="inline-flex items-center gap-1.5 bg-primary-fixed text-on-primary-fixed px-3 py-1.5 rounded-full text-sm font-semibold">
-                <span className="material-symbols-outlined text-base">category</span>
+                <LayoutGrid aria-hidden className="size-4 shrink-0" strokeWidth={2} />
                 {category.replace("-", " ")}
               </span>
             )}
             {location && (
               <span className="inline-flex items-center gap-1.5 bg-primary-fixed text-on-primary-fixed px-3 py-1.5 rounded-full text-sm font-semibold">
-                <span className="material-symbols-outlined text-base">location_on</span>
+                <MapPin aria-hidden className="size-4 shrink-0" strokeWidth={2} />
                 {location}
               </span>
             )}
@@ -127,13 +127,14 @@ export default async function SearchPage({
                 rating={p.rating}
                 priceRange={p.priceRange}
                 images={p.images}
+                galleryImageUrls={p.galleryImageUrls}
                 categoryLabel={p.category?.name}
               />
             ))}
           </div>
         ) : (
           <div data-search-empty className="text-center py-24">
-            <span className="material-symbols-outlined text-6xl text-outline mb-4 block">search_off</span>
+            <SearchX aria-hidden className="size-16 text-outline mb-4 block mx-auto" strokeWidth={1.25} />
             <h3 className="text-xl font-bold text-on-surface mb-2">{t("noResultsTitle")}</h3>
             <p className="text-on-surface-variant mb-6">{t("noResultsHint")}</p>
             <Link href="/" className="btn btn-primary">

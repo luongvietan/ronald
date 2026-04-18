@@ -1,8 +1,8 @@
+import { ChevronRight, House, SearchX } from "lucide-react";
 import { client } from "@/lib/sanity/client";
 import { providersByCategoryQuery, categoriesQuery, allCategorySlugsQuery } from "@/lib/sanity/queries";
 import ProviderCard from "@/components/ProviderCard";
 import CategoryFilters from "@/components/CategoryFilters";
-import CategoryAnimations from "@/components/animations/CategoryAnimations";
 import { Link } from "@/i18n/navigation";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -18,6 +18,7 @@ type Provider = {
   rating?: number;
   priceRange?: string;
   images?: Array<{ asset?: { _ref: string } }>;
+  galleryImageUrls?: string[];
 };
 
 const STATIC_SLUGS = [
@@ -95,22 +96,17 @@ export default async function CategoryPage({
 
   return (
     <div className="min-h-screen" data-page="category">
-      <CategoryAnimations />
       <div className="bg-surface-container-lowest border-b border-outline-variant/40 pt-24 pb-8">
         <div className="max-w-[1200px] mx-auto px-6" data-cat-header>
           <div data-cat-breadcrumb className="flex items-center gap-1.5 text-on-surface-variant text-sm mb-5">
             <Link href="/" className="hover:text-primary transition-colors">
               {t("breadcrumbHome")}
             </Link>
-            <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>
-              chevron_right
-            </span>
+            <ChevronRight aria-hidden className="size-4 shrink-0" strokeWidth={2} />
             <Link href="/categories/photography" className="hover:text-primary transition-colors">
               {t("breadcrumbExplore")}
             </Link>
-            <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>
-              chevron_right
-            </span>
+            <ChevronRight aria-hidden className="size-4 shrink-0" strokeWidth={2} />
             <span className="text-on-surface font-medium">{categoryLabel}</span>
           </div>
 
@@ -163,13 +159,14 @@ export default async function CategoryPage({
                 rating={p.rating}
                 priceRange={p.priceRange}
                 images={p.images}
+                galleryImageUrls={p.galleryImageUrls}
               />
             ))}
           </div>
         ) : (
           <div data-cat-empty className="text-center py-28">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-surface-container mb-6">
-              <span className="material-symbols-outlined text-5xl text-outline">search_off</span>
+              <SearchX aria-hidden className="size-12 text-outline" strokeWidth={1.25} />
             </div>
             <h3 className="text-2xl font-bold text-on-surface mb-2">{t("noProvidersTitle")}</h3>
             <p className="text-on-surface-variant mb-6 max-w-sm mx-auto">
@@ -180,9 +177,7 @@ export default async function CategoryPage({
               {t("noProvidersEnd")}
             </p>
             <Link href="/" className="btn btn-primary">
-              <span aria-hidden="true" className="material-symbols-outlined text-[18px]">
-                home
-              </span>
+              <House aria-hidden className="size-[18px] shrink-0" strokeWidth={2} />
               {t("backHome")}
             </Link>
           </div>

@@ -79,6 +79,23 @@ export const provider = defineType({
       of: [{ type: "image", options: { hotspot: true } }],
     }),
     defineField({
+      name: "galleryImageUrls",
+      title: "Gallery image URLs",
+      type: "array",
+      of: [
+        {
+          type: "url",
+          validation: (Rule) =>
+            Rule.uri({
+              scheme: ["https"],
+              allowRelative: false,
+            }),
+        },
+      ],
+      description:
+        "Optional. One or more direct HTTPS image URLs. Shown in the gallery together with uploaded images (URLs after uploads).",
+    }),
+    defineField({
       name: "services",
       title: "Services",
       type: "object",

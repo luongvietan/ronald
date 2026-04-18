@@ -71,15 +71,8 @@
       "catering": "Traiteur",
       "musicDj": "Musique / DJ"
     },
-    "fallbackCategories": {
-      "photography": "Photographie",
-      "catering": "Traiteur",
-      "flowersDecoration": "Fleurs & Décoration",
-      "musicDj": "Musique / DJ",
-      "venues": "Lieux",
-      "eventPlanner": "Organisateur d'événements",
-      "decoration": "Décoration"
-    }
+    "emptyCategories": "Aucune catégorie n'est publiée pour le moment. Ajoutez-en dans Sanity Studio lorsque vous êtes prêt.",
+    "emptyFeatured": "Aucun prestataire à la une pour le moment. Cochez « Featured on Homepage » sur des fiches prestataires dans Sanity Studio pour les afficher ici."
   },
   "search": {
     "metaTitle": "Recherche de prestataires",
@@ -143,6 +136,13 @@
     "noPhotos": "Pas encore de photos",
     "photoAlt": "{name} — photo {n}",
     "galleryAlt": "{name}",
+    "galleryDotsAria": "Diaporama galerie",
+    "galleryDotAria": "Afficher l’image {n} sur {total}",
+    "viewPhotosCount": "Voir photos ({count})",
+    "galleryDialogTitle": "{name} — photos",
+    "galleryClose": "Fermer la galerie",
+    "galleryPrev": "Photo précédente",
+    "galleryNext": "Photo suivante",
     "breadcrumbHome": "Accueil",
     "ratingAria": "Note {rating} sur 5"
   },

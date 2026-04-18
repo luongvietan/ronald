@@ -1,8 +1,7 @@
+import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import LegalAnimations from "@/components/animations/LegalAnimations";
-
 export async function generateMetadata({
   params,
 }: {
@@ -26,11 +25,10 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
 
   return (
     <div className="pt-20" data-page="legal">
-      <LegalAnimations />
       <div className="max-w-3xl mx-auto px-6 py-16">
         <div data-legal-back className="mb-8">
           <Link href="/" className="text-primary text-sm hover:underline flex items-center gap-1">
-            <span className="material-symbols-outlined text-base">arrow_back</span>
+            <ArrowLeft aria-hidden className="size-4 shrink-0" strokeWidth={2} />
             {t("back")}
           </Link>
         </div>
