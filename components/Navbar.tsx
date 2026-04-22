@@ -4,6 +4,7 @@ import { CircleUser } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import MobileMenu from "./MobileMenu";
 import LocaleSwitcher from "./LocaleSwitcher";
 
@@ -42,11 +43,15 @@ export default function Navbar() {
         <Link
           href="/"
           aria-label={t("homeAria")}
-          className={`text-2xl font-extrabold tracking-tighter font-headline transition-colors duration-150 rounded ${
-            transparent ? "text-white" : "text-primary"
-          }`}
+          className="relative h-20 w-80 transition-opacity hover:opacity-90"
         >
-          L&apos;Île Host
+          <Image
+            src="/logo.png"
+            alt="Moris Events"
+            fill
+            className={`object-contain object-left transition-all duration-300 ${transparent ? "brightness-0 invert" : ""}`}
+            priority
+          />
         </Link>
 
         <div className="hidden md:flex items-center gap-6">
@@ -75,7 +80,7 @@ export default function Navbar() {
 
         <div className="hidden md:flex items-center gap-3">
           <div className={transparent ? "text-white" : "text-primary"}>
-            <LocaleSwitcher />
+            <LocaleSwitcher onDark={transparent} />
           </div>
           <Link href="/contact" className={`btn ${transparent ? "btn-on-dark" : "btn-primary"}`}>
             {t("listService")}

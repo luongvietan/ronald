@@ -1,6 +1,7 @@
 import { Camera, Globe, Share2 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import Image from "next/image";
 
 const CATEGORY_SLUGS = [
   { slug: "photography", key: "photography" },
@@ -27,7 +28,14 @@ export default async function Footer() {
       <div className="max-w-[1200px] mx-auto px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           <div className="md:col-span-1">
-            <div className="text-xl font-bold text-primary mb-4 font-headline">L&apos;Île Host</div>
+            <div className="relative h-20 w-80 mb-4">
+              <Image
+                src="/logo.png"
+                alt="Moris Events"
+                fill
+                className="object-contain object-left"
+              />
+            </div>
             <p className="text-text-secondary max-w-xs leading-relaxed text-sm">{t("tagline")}</p>
             <ul className="flex gap-3 mt-6" aria-label="Social links">
               {SOCIALS.map(({ Icon, label, href }) => (

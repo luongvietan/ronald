@@ -4,7 +4,7 @@ import { useLocale } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
 
-export default function LocaleSwitcher() {
+export default function LocaleSwitcher({ onDark = false }: { onDark?: boolean }) {
   const locale = useLocale() as AppLocale;
   const pathname = usePathname();
 
@@ -19,8 +19,12 @@ export default function LocaleSwitcher() {
         locale="en"
         className={`rounded-full px-2 py-0.5 transition-colors ${
           locale === "en"
-            ? "bg-white/25 text-inherit"
-            : "text-inherit/70 hover:text-inherit"
+            ? onDark
+              ? "bg-white/25 text-inherit"
+              : "bg-primary-fixed text-primary"
+            : onDark
+              ? "text-inherit/70 hover:text-inherit"
+              : "text-inherit/70 hover:bg-primary/5 hover:text-inherit"
         }`}
       >
         EN
@@ -33,8 +37,12 @@ export default function LocaleSwitcher() {
         locale="fr"
         className={`rounded-full px-2 py-0.5 transition-colors ${
           locale === "fr"
-            ? "bg-white/25 text-inherit"
-            : "text-inherit/70 hover:text-inherit"
+            ? onDark
+              ? "bg-white/25 text-inherit"
+              : "bg-primary-fixed text-primary"
+            : onDark
+              ? "text-inherit/70 hover:text-inherit"
+              : "text-inherit/70 hover:bg-primary/5 hover:text-inherit"
         }`}
       >
         FR

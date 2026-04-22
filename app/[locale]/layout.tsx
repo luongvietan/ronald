@@ -70,6 +70,9 @@ export async function generateMetadata({
         fr: "/fr",
       },
     },
+    icons: {
+      icon: "/favicon.png",
+    },
   };
 }
 

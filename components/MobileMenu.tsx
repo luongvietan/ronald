@@ -3,7 +3,9 @@
 import { ChevronRight, Menu, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link, usePathname } from "@/i18n/navigation";
+import Image from "next/image";
 import LocaleSwitcher from "./LocaleSwitcher";
 
 const CATEGORY_SLUGS = [
@@ -18,6 +20,7 @@ const CATEGORY_SLUGS = [
 
 export default function MobileMenu({ transparent = false }: { transparent?: boolean }) {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const t = useTranslations("nav");
   const tFooter = useTranslations("footer.categories");
@@ -31,17 +34,28 @@ export default function MobileMenu({ transparent = false }: { transparent?: bool
   ];
 
   useEffect(() => {
-    if (!open) return;
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
     };
     document.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
     };
   }, [open]);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   return (
     <>
@@ -58,84 +72,106 @@ export default function MobileMenu({ transparent = false }: { transparent?: bool
         {open ? <X aria-hidden className="size-7" strokeWidth={2} /> : <Menu aria-hidden className="size-7" strokeWidth={2} />}
       </button>
 
-      {open && (
-        <div
-          className="fixed inset-0 bg-black/40 z-40 md:hidden"
-          onClick={() => setOpen(false)}
-          aria-hidden="true"
-        />
-      )}
+      {mounted &&
+        createPortal(
+          <>
+            {open && (
+              <div
+                className="fixed inset-0 z-[90] bg-black/40 md:hidden"
+                onClick={() => setOpen(false)}
+                aria-hidden="true"
+              />
+            )}
 
-      <div
-        id="mobile-menu-panel"
-        role="dialog"
-        aria-modal="true"
-        aria-label={tMobile("navAria")}
-        className={`fixed top-0 right-0 h-full w-72 max-w-[85vw] bg-surface-container-lowest z-50 shadow-[0_12px_32px_rgba(34,34,34,0.12)] transform transition-transform duration-200 md:hidden ${
-          open ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        <div className="flex items-center justify-between p-6 border-b border-border-strong">
-          <span className="text-xl font-extrabold text-primary font-headline">L&apos;Île Host</span>
-          <div className="flex items-center gap-2">
-            <div className="text-primary">
-              <LocaleSwitcher />
-            </div>
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              aria-label={tMobile("close")}
-              className="w-9 h-9 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface-container transition-colors duration-150"
+            <div
+              id="mobile-menu-panel"
+              role="dialog"
+              aria-modal="true"
+              aria-label={tMobile("navAria")}
+              className={`fixed inset-y-0 right-0 z-[100] w-full max-w-sm bg-surface-container-lowest shadow-[0_12px_32px_rgba(34,34,34,0.12)] transform transition-transform duration-200 md:hidden ${
+                open ? "translate-x-0" : "pointer-events-none translate-x-full"
+              }`}
             >
-              <X aria-hidden className="size-6" strokeWidth={2} />
-            </button>
-          </div>
-        </div>
+              <div className="flex h-full flex-col">
+                <div className="flex items-start justify-between gap-4 border-b border-border-strong px-5 py-5">
+                  <div className="min-w-0">
+                    <div className="relative h-16 w-64">
+                      <Image
+                        src="/logo.png"
+                        alt="Moris Events"
+                        fill
+                        className="object-contain object-left"
+                      />
+                    </div>
+                    <p className="mt-1 text-sm text-text-secondary">{tMobile("navAria")}</p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <div className="text-primary">
+                      <LocaleSwitcher />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setOpen(false)}
+                      aria-label={tMobile("close")}
+                      className="flex h-9 w-9 items-center justify-center rounded-full text-text-secondary transition-colors duration-150 hover:bg-surface-container"
+                    >
+                      <X aria-hidden className="size-6" strokeWidth={2} />
+                    </button>
+                  </div>
+                </div>
 
-        <nav className="p-6 flex flex-col gap-1 overflow-y-auto max-h-[calc(100vh-96px)]">
-          {NAV_LINKS.map((link) => {
-            const active = pathname === link.href;
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                aria-current={active ? "page" : undefined}
-                onClick={() => setOpen(false)}
-                className={`px-4 py-3 rounded-[8px] font-semibold transition-colors duration-150 ${
-                  active
-                    ? "bg-primary-fixed text-on-primary-fixed"
-                    : "text-text-primary hover:bg-surface-container-low"
-                }`}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
+                <nav className="flex-1 overflow-y-auto px-5 py-5">
+                  <div className="flex flex-col gap-2">
+                    {NAV_LINKS.map((link) => {
+                      const active = pathname === link.href;
+                      return (
+                        <Link
+                          key={link.href}
+                          href={link.href}
+                          aria-current={active ? "page" : undefined}
+                          onClick={() => setOpen(false)}
+                          className={`rounded-2xl border px-4 py-3.5 text-base font-semibold transition-colors duration-150 ${
+                            active
+                              ? "border-primary/15 bg-primary-fixed text-on-primary-fixed"
+                              : "border-border-subtle bg-surface-container-low text-text-primary hover:bg-surface-container"
+                          }`}
+                        >
+                          {link.label}
+                        </Link>
+                      );
+                    })}
+                  </div>
 
-          <div className="mt-4 pt-4 border-t border-border-strong">
-            <p className="text-xs font-bold text-text-secondary uppercase tracking-widest mb-3 px-4">
-              {tMobile("categories")}
-            </p>
-            {CATEGORY_SLUGS.map((cat) => (
-              <Link
-                key={cat.slug}
-                href={`/categories/${cat.slug}`}
-                onClick={() => setOpen(false)}
-                className="px-4 py-2 rounded-[8px] text-sm text-text-secondary hover:bg-surface-container-low hover:text-text-primary flex items-center gap-2 transition-colors duration-150"
-              >
-                <ChevronRight aria-hidden className="text-primary size-4 shrink-0" strokeWidth={2} />
-                {tFooter(cat.key)}
-              </Link>
-            ))}
-          </div>
+                  <div className="mt-6 rounded-[20px] bg-surface-container-low p-3">
+                    <p className="px-2 text-xs font-bold uppercase tracking-[0.18em] text-text-secondary">
+                      {tMobile("categories")}
+                    </p>
+                    <div className="mt-3 flex flex-col gap-1">
+                      {CATEGORY_SLUGS.map((cat) => (
+                        <Link
+                          key={cat.slug}
+                          href={`/categories/${cat.slug}`}
+                          onClick={() => setOpen(false)}
+                          className="flex items-start gap-2 rounded-[12px] px-3 py-3 text-sm font-medium text-text-secondary transition-colors duration-150 hover:bg-white hover:text-text-primary"
+                        >
+                          <ChevronRight aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" strokeWidth={2} />
+                          <span className="leading-5">{tFooter(cat.key)}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
 
-          <div className="mt-6">
-            <Link href="/contact" onClick={() => setOpen(false)} className="btn btn-primary w-full">
-              {t("listService")}
-            </Link>
-          </div>
-        </nav>
-      </div>
+                  <div className="mt-6 pb-1">
+                    <Link href="/contact" onClick={() => setOpen(false)} className="btn btn-primary w-full">
+                      {t("listService")}
+                    </Link>
+                  </div>
+                </nav>
+              </div>
+            </div>
+          </>,
+          document.body,
+        )}
     </>
   );
 }
