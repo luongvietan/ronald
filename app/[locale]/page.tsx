@@ -77,7 +77,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       >
         <div data-hero-bg className="absolute inset-0 z-0">
           <Image
-            src="/hero.png"
+            src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1920&q=80"
             alt=""
             fill
             className="object-cover object-center"
