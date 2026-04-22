@@ -77,7 +77,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       >
         <div data-hero-bg className="absolute inset-0 z-0">
           <Image
-            src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1920&q=80"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1UIxBjfPNrLYRWHngEVO9bLwfJFugLFPldM7gJs7DA-eDEVZyFaJRUh8iv3ryoOODRXCVAbLF-eG8TCSOqcAVlLoacKJCr3o8dV8FFsdpwx0drhyZ-8Yk3J29tkZaH_EWe2xfHJVaqTW2_12Xod1QYNlQkwg0BHI9lSsUKklyk6GlMQvzPNLt87RqXELs0oZmgwg93Q-YoDt91wE3cEJQdX2dE-wX2b4eJFRc_LnbR0nVTRxUkRf8NurOBcshoiNCFEkzAgdvALNM"
             alt=""
             fill
             className="object-cover object-center"
