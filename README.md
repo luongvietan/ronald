@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# L'Île Host - Event Services Platform in Mauritius
 
-## Getting Started
+L'Île Host is a modern web platform designed to connect users with service providers for various events in Mauritius (weddings, birthdays, corporate events, private parties, etc.).
 
-First, run the development server:
+## 🚀 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Multilingual Support**: English and French (using `next-intl`).
+- **Dynamic Content**: Powered by Sanity CMS.
+- **Mobile-First Design**: Clean and responsive UI.
+- **Provider Categories**: Photography, Catering, Flowers/Decoration, Music/DJ, Venues, Event Planner.
+- **Provider Profiles**: Image galleries, descriptions, services, and direct WhatsApp contact.
+- **Search & Filters**: Basic filtering by category and location.
+
+## 🛠️ Tech Stack
+
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
+- **CMS**: [Sanity.io](https://www.sanity.io/)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
+- **Internationalization**: [next-intl](https://next-intl-docs.vercel.app/)
+- **Icons**: [Lucide React](https://lucide.dev/) & [React Icons](https://react-icons.github.io/react-icons/)
+- **Smooth Scrolling**: [Lenis](https://lenis.darkroom.engineering/)
+
+## 🏗️ Sanity Integration
+
+This project uses Sanity as a headless CMS to manage providers and categories.
+
+### Schema Types
+
+- **Category**: `name` (EN/FR), `slug`, `description` (EN/FR), `image` (upload or URL).
+- **Provider**: `name` (EN/FR), `slug`, `category` (reference), `shortDescription` (EN/FR), `description` (EN/FR), `location`, `images` (upload or URLs), `services` (EN/FR), `whatsapp`, `email`, `priceRange`, `rating`, `featured`.
+
+### Environment Variables
+
+Create a `.env.local` file in the root directory:
+
+```env
+NEXT_PUBLIC_SANITY_PROJECT_ID=your_project_id
+NEXT_PUBLIC_SANITY_DATASET=production
+SANITY_API_WRITE_TOKEN=your_write_token
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Sanity Scripts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The project includes utility scripts to manage Sanity content:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Seed Data**: Import initial categories and providers from `seed/sanity/`.
+  ```bash
+  npm run seed:sanity
+  ```
+- **Clear Content**: Delete all providers and categories from the dataset.
+  ```bash
+  npm run clear:sanity
+  ```
+- **Full Reset**: Clear and then seed.
+  ```bash
+  npm run clear:sanity && npm run seed:sanity
+  ```
 
-## Learn More
+## 🚦 Getting Started
 
-To learn more about Next.js, take a look at the following resources:
+1. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **Configure Sanity**:
+   Ensure your `.env.local` is set up with the correct Project ID and Token.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. **Run the development server**:
+   ```bash
+   npm run dev
+   ```
 
-## Deploy on Vercel
+4. **Access Sanity Studio**:
+   The Studio is integrated into the Next.js app (if configured) or can be run separately via `npx sanity start` in the `sanity` directory (if applicable).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📁 Project Structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `app/[locale]/`: Next.js App Router with internationalization.
+- `components/`: Reusable UI components.
+- `lib/sanity/`: Sanity client, queries, and image utilities.
+- `sanity/`: Sanity schema definitions and configuration.
+- `seed/sanity/`: Initial data in NDJSON format.
+- `messages/`: Translation files for `next-intl`.
+
+## 📝 License
+
+This project is private.
