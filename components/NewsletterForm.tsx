@@ -57,17 +57,17 @@ export default function NewsletterForm() {
           disabled={loading}
           aria-invalid={error}
           aria-describedby={error ? "home-newsletter-error" : undefined}
-          className={`bg-white/15 border text-white placeholder:text-white/55 rounded-[36px] px-6 py-3.5 outline-none text-sm transition-colors duration-150 focus:bg-white/20 ${
-            error ? "border-white/90" : "border-white/25 focus:border-white"
+          className={`bg-white border text-text-primary placeholder:text-text-secondary rounded-[36px] px-6 py-3.5 outline-none text-sm transition-all duration-150 shadow-sm focus:ring-2 focus:ring-white/40 ${
+            error ? "border-error" : "border-white/20 focus:border-white"
           }`}
         />
         {error && (
-          <p id="home-newsletter-error" role="alert" className="text-xs text-white/90 ml-4">
+          <p id="home-newsletter-error" role="alert" className="text-xs text-white font-medium ml-4 mt-1">
             {t("invalidEmail")}
           </p>
         )}
       </div>
-      <button type="submit" className="btn btn-on-dark" disabled={loading} data-loading={loading ? "true" : "false"} aria-busy={loading}>
+      <button type="submit" className="btn bg-white text-primary hover:bg-white/90 active:scale-95 transition-all duration-150 font-bold px-8 shadow-md" disabled={loading} data-loading={loading ? "true" : "false"} aria-busy={loading}>
         {loading ? (
           <>
             <span className="spinner" aria-hidden="true" />
