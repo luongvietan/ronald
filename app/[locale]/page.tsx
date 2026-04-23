@@ -6,7 +6,9 @@ import CategoryCard from "@/components/CategoryCard";
 import ProviderCard from "@/components/ProviderCard";
 import NewsletterForm from "@/components/NewsletterForm";
 import { client } from "@/lib/sanity/client";
+import { urlFor } from "@/lib/sanity/image";
 import { featuredProvidersQuery, categoriesQuery } from "@/lib/sanity/queries";
+import { getHomeContent, localize } from "@/lib/sanity/pageContent";
 import { Link } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
 
@@ -16,6 +18,9 @@ const HERO_PILLS: { slug: string; key: "photography" | "venues" | "catering" | "
   { slug: "catering", key: "catering" },
   { slug: "music-dj", key: "musicDj" },
 ];
+
+const DEFAULT_HERO_BG =
+  "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1920&q=80";
 
 type SanityCategory = {
   _id: string;
@@ -44,14 +49,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   let featuredProviders: SanityProvider[] = [];
   let categories: SanityCategory[] = [];
 
-  try {
-    [featuredProviders, categories] = await Promise.all([
-      client.fetch(featuredProvidersQuery, { locale: loc }),
-      client.fetch(categoriesQuery, { locale: loc }),
-    ]);
-  } catch {
-    /* Sanity not yet configured */
-  }
+  const [featuredResult, categoriesResult, content] = await Promise.all([
+    client.fetch(featuredProvidersQuery, { locale: loc }).catch(() => []),
+    client.fetch(categoriesQuery, { locale: loc }).catch(() => []),
+    getHomeContent(),
+  ]);
+  featuredProviders = featuredResult as SanityProvider[];
+  categories = categoriesResult as SanityCategory[];
 
   const displayCategories = categories.map((c) => ({
     name: c.name,
@@ -60,14 +64,40 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     fallbackImage: c.coverImageUrl,
   }));
 
+  const heroImageSrc = content?.hero?.backgroundImage?.asset?._ref
+    ? urlFor(content.hero.backgroundImage).width(1920).height(1080).fit("crop").auto("format").url()
+    : content?.hero?.backgroundImageUrl ?? DEFAULT_HERO_BG;
+
   const STATS = [
-    { value: "7+", label: t("stats.categories") },
-    { value: "100%", label: t("stats.verified") },
-    { value: loc === "fr" ? "Gratuit" : "Free", label: t("stats.browse") },
-    { value: loc === "fr" ? "Maurice" : "Mauritius", label: t("stats.islandWide") },
+    { value: "7+", label: localize(content?.stats?.categoriesLabel, loc, t("stats.categories")) },
+    { value: "100%", label: localize(content?.stats?.verifiedLabel, loc, t("stats.verified")) },
+    {
+      value: loc === "fr" ? "Gratuit" : "Free",
+      label: localize(content?.stats?.browseLabel, loc, t("stats.browse")),
+    },
+    {
+      value: loc === "fr" ? "Maurice" : "Mauritius",
+      label: localize(content?.stats?.islandWideLabel, loc, t("stats.islandWide")),
+    },
   ];
 
-  const HOW_KEYS = ["1", "2", "3"] as const;
+  const howSteps = [
+    {
+      Icon: Search,
+      title: localize(content?.howItWorks?.step1?.title, loc, t("steps.1.title")),
+      desc: localize(content?.howItWorks?.step1?.desc, loc, t("steps.1.desc")),
+    },
+    {
+      Icon: UserCheck,
+      title: localize(content?.howItWorks?.step2?.title, loc, t("steps.2.title")),
+      desc: localize(content?.howItWorks?.step2?.desc, loc, t("steps.2.desc")),
+    },
+    {
+      Icon: MessageCircle,
+      title: localize(content?.howItWorks?.step3?.title, loc, t("steps.3.title")),
+      desc: localize(content?.howItWorks?.step3?.desc, loc, t("steps.3.desc")),
+    },
+  ];
 
   return (
     <div className="overflow-hidden" data-page="home">
@@ -77,7 +107,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       >
         <div data-hero-bg className="absolute inset-0 z-0">
           <Image
-            src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1920&q=80"
+            src={heroImageSrc}
             alt=""
             fill
             className="object-cover object-center"
@@ -92,21 +122,21 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm text-white/90 border border-white/20 text-xs font-semibold px-4 py-2 rounded-full mb-6 tracking-wider uppercase"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" />
-            {t("heroBadge")}
+            {localize(content?.hero?.badge, loc, t("heroBadge"))}
           </span>
           <h1
             data-hero-title
             className="text-4xl sm:text-5xl md:text-7xl font-extrabold !text-white mb-5 tracking-tight leading-[1.1]"
           >
-            {t("heroTitleLine1")}
+            {localize(content?.hero?.titleLine1, loc, t("heroTitleLine1"))}
             {" "}
-            {t("heroTitleLine2")}
+            {localize(content?.hero?.titleLine2, loc, t("heroTitleLine2"))}
           </h1>
           <p
             data-hero-sub
             className="text-base md:text-xl text-white/85 mb-10 font-medium max-w-2xl mx-auto leading-relaxed"
           >
-            {t("heroSubtitle")}
+            {localize(content?.hero?.subtitle, loc, t("heroSubtitle"))}
           </p>
           <div data-hero-search>
             <SearchBar />
@@ -147,8 +177,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <section data-categories className="max-w-[1200px] mx-auto px-6 py-20 md:py-28">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
           <div>
-            <span className="section-label">{t("categoriesSectionLabel")}</span>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-on-surface">{t("categoriesTitle")}</h2>
+            <span className="section-label">
+              {localize(content?.categoriesSection?.label, loc, t("categoriesSectionLabel"))}
+            </span>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-on-surface">
+              {localize(content?.categoriesSection?.title, loc, t("categoriesTitle"))}
+            </h2>
           </div>
         </div>
 
@@ -187,34 +221,35 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <section data-how className="bg-surface-container-low py-20 md:py-24">
         <div className="max-w-[1200px] mx-auto px-6">
           <div className="text-center mb-16">
-            <span className="section-label">{t("howLabel")}</span>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-on-surface">{t("howTitle")}</h2>
+            <span className="section-label">
+              {localize(content?.howItWorks?.label, loc, t("howLabel"))}
+            </span>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-on-surface">
+              {localize(content?.howItWorks?.title, loc, t("howTitle"))}
+            </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
             <div
               data-how-line
               className="hidden md:block absolute top-8 left-[calc(16.67%+1rem)] right-[calc(16.67%+1rem)] h-px bg-outline-variant"
             />
-            {HOW_KEYS.map((step, i) => (
-              <div key={step} data-how-step className="text-center group relative">
-                <div className="relative inline-block mb-5">
-                  <div className="w-16 h-16 rounded-full bg-white shadow-md border border-outline-variant/40 mx-auto flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
-                    {step === "1" ? (
-                      <Search aria-hidden className="text-primary size-7 group-hover:text-on-primary transition-colors duration-300" strokeWidth={2} />
-                    ) : step === "2" ? (
-                      <UserCheck aria-hidden className="text-primary size-7 group-hover:text-on-primary transition-colors duration-300" strokeWidth={2} />
-                    ) : (
-                      <MessageCircle aria-hidden className="text-primary size-7 group-hover:text-on-primary transition-colors duration-300" strokeWidth={2} />
-                    )}
+            {howSteps.map((step, i) => {
+              const Icon = step.Icon;
+              return (
+                <div key={i} data-how-step className="text-center group relative">
+                  <div className="relative inline-block mb-5">
+                    <div className="w-16 h-16 rounded-full bg-white shadow-md border border-outline-variant/40 mx-auto flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
+                      <Icon aria-hidden className="text-primary size-7 group-hover:text-on-primary transition-colors duration-300" strokeWidth={2} />
+                    </div>
+                    <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-primary text-on-primary text-[10px] font-extrabold flex items-center justify-center shadow-sm">
+                      {i + 1}
+                    </span>
                   </div>
-                  <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-primary text-on-primary text-[10px] font-extrabold flex items-center justify-center shadow-sm">
-                    {i + 1}
-                  </span>
+                  <h3 className="text-lg font-bold text-on-surface mb-2">{step.title}</h3>
+                  <p className="text-on-surface-variant text-sm leading-relaxed max-w-xs mx-auto">{step.desc}</p>
                 </div>
-                <h3 className="text-lg font-bold text-on-surface mb-2">{t(`steps.${step}.title`)}</h3>
-                <p className="text-on-surface-variant text-sm leading-relaxed max-w-xs mx-auto">{t(`steps.${step}.desc`)}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -226,8 +261,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10"
           >
             <div>
-              <span className="section-label">{t("featuredLabel")}</span>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-on-surface">{t("featuredTitle")}</h2>
+              <span className="section-label">
+                {localize(content?.featuredSection?.label, loc, t("featuredLabel"))}
+              </span>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-on-surface">
+                {localize(content?.featuredSection?.title, loc, t("featuredTitle"))}
+              </h2>
             </div>
             <Link href="/search" className="text-primary font-bold text-sm flex items-center gap-1.5 hover:gap-2.5 transition-all self-start md:self-auto">
               {t("exploreAll")}
@@ -267,8 +306,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
           <div className="relative z-10 flex flex-col md:flex-row items-center gap-10 p-8 md:p-14">
             <div className="flex-1 text-center md:text-left">
-              <h2 className="text-2xl md:text-4xl font-extrabold mb-3 leading-tight">{t("newsletterTitle")}</h2>
-              <p className="text-base opacity-85 max-w-md leading-relaxed">{t("newsletterSubtitle")}</p>
+              <h2 className="text-2xl md:text-4xl font-extrabold mb-3 leading-tight">
+                {localize(content?.newsletter?.title, loc, t("newsletterTitle"))}
+              </h2>
+              <p className="text-base opacity-85 max-w-md leading-relaxed">
+                {localize(content?.newsletter?.subtitle, loc, t("newsletterSubtitle"))}
+              </p>
             </div>
             <NewsletterForm />
           </div>

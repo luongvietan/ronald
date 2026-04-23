@@ -3,16 +3,25 @@ import type { Metadata } from "next";
 import { FaWhatsapp } from "react-icons/fa";
 import { getTranslations } from "next-intl/server";
 import ContactPageForm from "./ContactPageForm";
+import { getContactContent, localize } from "@/lib/sanity/pageContent";
+import type { AppLocale } from "@/i18n/routing";
+
+const DEFAULT_EMAIL = "hello@ilehost.mu";
+const DEFAULT_WHATSAPP_DISPLAY = "+230 5XXX XXXX";
+const DEFAULT_WHATSAPP_LINK = "2305XXXXXXX";
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const loc = locale as AppLocale;
   const t = await getTranslations({ locale, namespace: "contact" });
+  const content = await getContactContent();
   return {
-    title: t("metaTitle"),
-    description: t("metaDescription"),
+    title: localize(content?.seo?.metaTitle, loc, t("metaTitle")),
+    description: localize(content?.seo?.metaDescription, loc, t("metaDescription")),
     alternates: {
       canonical: `/${locale}/contact`,
       languages: { en: "/en/contact", fr: "/fr/contact" },
@@ -22,33 +31,57 @@ export async function generateMetadata({
 
 export default async function ContactPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  const loc = locale as AppLocale;
   const t = await getTranslations({ locale, namespace: "contact" });
+  const content = await getContactContent();
+
+  const email = content?.email?.trim() || DEFAULT_EMAIL;
+  const waDisplay = content?.whatsappDisplay?.trim() || DEFAULT_WHATSAPP_DISPLAY;
+  const waLink = content?.whatsappLink?.trim() || DEFAULT_WHATSAPP_LINK;
 
   const contactInfo = [
-    { Icon: Mail, label: t("email"), value: "hello@ilehost.mu", href: "mailto:hello@ilehost.mu", brand: null },
+    {
+      Icon: Mail,
+      label: t("email"),
+      value: email,
+      href: `mailto:${email}`,
+      brand: null,
+    },
     {
       Icon: FaWhatsapp,
       label: t("whatsapp"),
-      value: "+230 5XXX XXXX",
-      href: "https://wa.me/2305XXXXXXX",
+      value: waDisplay,
+      href: `https://wa.me/${waLink}`,
       brand: "whatsapp" as const,
     },
-    { Icon: MapPin, label: t("basedIn"), value: t("locationValue"), href: null, brand: null },
+    {
+      Icon: MapPin,
+      label: t("basedIn"),
+      value: localize(content?.locationValue, loc, t("locationValue")),
+      href: null,
+      brand: null,
+    },
   ];
 
   return (
     <div className="pt-20" data-page="contact">
       <section data-contact-hero className="bg-surface-container-low py-16 px-6">
         <div className="max-w-3xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-on-surface mb-4">{t("title")}</h1>
-          <p className="text-on-surface-variant text-lg leading-relaxed">{t("subtitle")}</p>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-on-surface mb-4">
+            {localize(content?.hero?.title, loc, t("title"))}
+          </h1>
+          <p className="text-on-surface-variant text-lg leading-relaxed">
+            {localize(content?.hero?.subtitle, loc, t("subtitle"))}
+          </p>
         </div>
       </section>
 
       <div className="max-w-[1200px] mx-auto px-6 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-16">
           <div className="lg:col-span-2">
-            <h2 className="text-2xl font-bold text-on-surface mb-6">{t("infoTitle")}</h2>
+            <h2 className="text-2xl font-bold text-on-surface mb-6">
+              {localize(content?.infoTitle, loc, t("infoTitle"))}
+            </h2>
             <div className="flex flex-col gap-6">
               {contactInfo.map(({ Icon, label, value, href, brand }) => (
                 <div key={label} data-contact-info-item className="flex items-start gap-4">
@@ -79,16 +112,25 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
             </div>
 
             <div data-contact-cta className="mt-10 p-6 bg-primary-fixed rounded-[8px]">
-              <h3 className="font-bold text-on-primary-fixed mb-2">{t("ctaTitle")}</h3>
-              <p className="text-on-primary-fixed/80 text-sm mb-4">{t("ctaBody")}</p>
-              <a href="mailto:hello@ilehost.mu?subject=I want to list my service" className="btn btn-primary">
-                {t("ctaButton")}
+              <h3 className="font-bold text-on-primary-fixed mb-2">
+                {localize(content?.cta?.title, loc, t("ctaTitle"))}
+              </h3>
+              <p className="text-on-primary-fixed/80 text-sm mb-4">
+                {localize(content?.cta?.body, loc, t("ctaBody"))}
+              </p>
+              <a
+                href={`mailto:${email}?subject=I want to list my service`}
+                className="btn btn-primary"
+              >
+                {localize(content?.cta?.buttonLabel, loc, t("ctaButton"))}
               </a>
             </div>
           </div>
 
           <div data-contact-form-wrap className="lg:col-span-3">
-            <h2 className="text-2xl font-bold text-on-surface mb-6">{t("formTitle")}</h2>
+            <h2 className="text-2xl font-bold text-on-surface mb-6">
+              {localize(content?.formTitle, loc, t("formTitle"))}
+            </h2>
             <ContactPageForm />
           </div>
         </div>
