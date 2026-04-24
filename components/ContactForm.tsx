@@ -45,8 +45,29 @@ export default function ContactForm({ providerName }: { providerName: string }) 
     setErrors({});
     setStatus("loading");
     try {
-      await new Promise((r) => setTimeout(r, 600));
-      setStatus("success");
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY,
+          name: form.name,
+          email: form.email,
+          subject: "New contact request for " + providerName,
+          message: form.message,
+          provider: providerName,
+          from_name: "Ronald Platform",
+          page: "provider",
+        }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        setStatus("success");
+      } else {
+        setStatus("error");
+      }
     } catch {
       setStatus("error");
     }
