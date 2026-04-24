@@ -55,6 +55,8 @@ export default function ContactPageForm() {
     setErrors({});
     setStatus("loading");
     try {
+      const subjectKey = form.subject as (typeof SUBJECT_KEYS)[number];
+      const subjectLabel = t(`subjects.${subjectKey}`);
       const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: {
@@ -65,7 +67,7 @@ export default function ContactPageForm() {
           access_key: process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY,
           name: form.name,
           email: form.email,
-          subject: `Contact: ${t(`subjects.${form.subject as (typeof SUBJECT_KEYS)[number]}`)}`,
+          subject: `Contact: ${subjectLabel}`,
           message: form.message,
           from_name: "Ronald Platform",
           page: "contact",
