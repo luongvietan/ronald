@@ -52,7 +52,7 @@ export default function ContactPageForm() {
       setStatus("error");
       return;
     }
-    setErrors({});
+    setErrors({});      
     setStatus("loading");
     try {
       const subjectKey = form.subject as (typeof SUBJECT_KEYS)[number];
@@ -144,7 +144,7 @@ export default function ContactPageForm() {
           <option value="">{t("selectSubject")}</option>
           {SUBJECT_KEYS.map((k) => (
             <option key={k} value={k}>
-              {t(`subjects.${k}`)}
+              {t("subjects." + k)}
             </option>
           ))}
         </select>
@@ -236,11 +236,11 @@ function FieldGroup({
         disabled={disabled}
         autoComplete={autoComplete}
         aria-invalid={Boolean(error)}
-        aria-describedby={error ? `${id}-error` : undefined}
+        aria-describedby={error ? id + "-error" : undefined}
         className="field"
       />
       {error && (
-        <p id={`${id}-error`} role="alert" className="text-xs text-error mt-1">
+        <p id={id + "-error"} role="alert" className="text-xs text-error mt-1">
           {error}
         </p>
       )}
